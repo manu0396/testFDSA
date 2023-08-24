@@ -35,6 +35,9 @@ class SharedViewModel @Inject constructor(
     private val _data: MutableStateFlow<List<DomainModel?>> = MutableStateFlow(listOf())
     val data: StateFlow<List<DomainModel?>> = _data.asStateFlow()
 
+   // private val _dataFix: MutableStateFlow<String?> = MutableStateFlow("")
+   // val dataFix: StateFlow<String?> = _dataFix.asStateFlow()
+
     @Inject
     lateinit var useCase: MainUseCase
 
@@ -47,6 +50,7 @@ class SharedViewModel @Inject constructor(
                     is WrapperResponse.Success ->{
                         resp.data?.let {
                             _data.value = MainMapper.convertMainModelToDomainModel(it)
+                            //_dataFix.value = resp.data
                             _showLoading.value = false
                         }
                     }
