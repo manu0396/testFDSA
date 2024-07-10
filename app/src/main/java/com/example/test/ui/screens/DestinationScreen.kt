@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.test.R
 import com.example.test.SharedViewModel
 import com.example.test.ui.components.ItemComponent
@@ -23,13 +22,12 @@ import com.example.test.ui.components.SimpleAlertDialog
 import com.example.test.ui.theme.TestTheme
 
 @Composable
-fun MainScreen(
+fun DestinationScreen(
     context:Context,
     viewModel:SharedViewModel
 ) {
 
     val data by viewModel.data.collectAsState()
-    //val dataFix by viewModel.dataFix.collectAsState()
     val showLoading by viewModel.showLoading.collectAsState()
     val showDialog by viewModel.showDialog.collectAsState()
     val messageDialog by viewModel.messageDialog.collectAsState()
@@ -63,13 +61,9 @@ fun MainScreen(
                 Text(text = context.getString(R.string.titleMainScreen))
             }
             Box(contentAlignment = Alignment.Center) {
-                /*
-                if(dataFix!=null){
-                    Text(text = dataFix!!)
-                }else{
-                    Text(text = context.getString(R.string.usersNotFound))
-                }
-                */
+
+
+
                 if(data.isEmpty()){
                     Text(text = context.getString(R.string.usersNotFound))
                 }else{

@@ -1,6 +1,5 @@
 package com.example.test.domain.mapper
 
-import com.example.test.data.models.UserModel
 import com.example.test.domain.models.DomainModel
 
 object MainMapper {

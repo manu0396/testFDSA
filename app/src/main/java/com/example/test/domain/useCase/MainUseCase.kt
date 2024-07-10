@@ -2,7 +2,6 @@ package com.example.test.domain.useCase
 
 import android.content.Context
 import com.example.test.data.ApiRandomUser
-import com.example.test.data.models.UserModel
 import com.example.test.utils.WrapperResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped

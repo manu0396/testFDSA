@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">Test</string>
     <string name="textError">Se ha producido un error</string>
-    <string name="titleMainScreen">List of users</string>
+    <string name="titleMainScreen">Destinations</string>
     <string name="usersNotFound">No se han encontrado usuarios</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="titleError">Error</string>
+    <string name="createDestiny">Create Destiny</string>
+    <string name="modifyDestiny">Modify Destiny</string>
+    <string name="removeDestiny">Remove Destiny</string>
+    <string name="dataSelector">Data Selector</string>
+    <string name="Search">Search</string>
 </resources>
