@@ -14,7 +14,7 @@ interface HotelDAO {
    @Insert
    suspend fun insert(destinationData: DestinationData)
 
-   @Query("SELECT * FROM DestinationData")
+   @Query("SELECT * FROM destinations")
    suspend fun getAll(): List<DestinationData>
 
    @Delete
@@ -22,4 +22,7 @@ interface HotelDAO {
 
    @Update
    suspend fun update(destinationData: DestinationData)
+
+   @Query("SELECT * FROM destinations WHERE id = :id")
+   suspend fun selectById(id: String)
 }
