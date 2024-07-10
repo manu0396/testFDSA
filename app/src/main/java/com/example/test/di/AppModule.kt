@@ -1,8 +1,7 @@
 package com.example.test.di
 
-import com.example.test.data.ApiClient
-import com.example.test.data.ApiRandomUser
-import com.example.test.utils.Constants
+import com.example.test.data.remote.ApiClient
+import com.example.test.data.remote.HotelBediaXApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,13 +18,13 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideAPi():ApiRandomUser{
+    fun provideAPi(): HotelBediaXApi {
         httpClient.addInterceptor(getInterceptor())
         return ApiClient(
             baseUrl = Constants.BASE_URL,
             converterFactory = GsonConverterFactory.create(),
             okHttpClientBuilder = httpClient
-        ).createService(ApiRandomUser::class.java)
+        ).createService(HotelBediaXApi::class.java)
     }
 
     private fun getInterceptor(): Interceptor {

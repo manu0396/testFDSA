@@ -1,13 +1,11 @@
-package es.paytef.cepsastandalone.data.local.models
+package com.example.test.data.local.models
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import es.paytef.cepsastandalone.BuildConfig.DB_PRODUCTS_NAME
-import es.paytef.cepsastandalone.utils.Constants
 
-@Entity(tableName = DB_PRODUCTS_NAME)
-data class ProductData(
+@Entity(tableName = DB_DESTINATIONS_NAME)
+data class DestinationData(
     @PrimaryKey(autoGenerate = false) val id: String,
 
 )

@@ -9,10 +9,7 @@ import es.paytef.cepsastandalone.BuildConfig.DB_PRODUCTS_NAME
 import es.paytef.cepsastandalone.BuildConfig.DB_SELLS_NAME
 import es.paytef.cepsastandalone.BuildConfig.DB_SESSION_NAME
 import es.paytef.cepsastandalone.BuildConfig.DB_SHIFT_NAME
-import es.paytef.cepsastandalone.data.local.models.ProductData
-import es.paytef.cepsastandalone.data.local.models.SellData
-import es.paytef.cepsastandalone.data.local.models.RegistrationData
-import es.paytef.cepsastandalone.data.local.models.ShiftData
+import com.example.test.data.local.models.DestinationData
 
 @Dao
 interface CepsaDAO {
@@ -26,13 +23,13 @@ interface CepsaDAO {
     fun insertTcod(registrationData: RegistrationData): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertProduct(productData: ProductData): Long
+    fun insertProduct(destinationData: DestinationData): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertSell(sellData: SellData): Long
 
     @Query("SELECT * FROM $DB_PRODUCTS_NAME")
-    fun getProductData(): List<ProductData>
+    fun getProductData(): List<DestinationData>
 
     @Query("DELETE FROM $DB_PRODUCTS_NAME WHERE name=:name")
     fun deleteProduct(name: String): Int

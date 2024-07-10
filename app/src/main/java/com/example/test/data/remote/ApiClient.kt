@@ -1,7 +1,6 @@
-package com.example.test.data
+package com.example.test.data.remote
 
 
-import com.example.test.utils.Constants
 import com.google.gson.GsonBuilder
 import okhttp3.Call
 import okhttp3.Interceptor

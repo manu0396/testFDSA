@@ -1,8 +1,14 @@
 package com.example.test.domain.models
 
+import com.example.test.data.models.Timestamp
+
 data class DomainModel(
-    val email: String,
-    val name:String,
-    val picture:String,
-    val location:String
+    val id: String? = null,
+    val name:String? = null,
+    val description:String? = null,
+    val countryMode:String? = null,
+    val type: String? = null,
+    val picture:String? = null,
+    val lastModify:Timestamp? = null
+
 )

@@ -34,10 +34,11 @@ class MainActivity : ComponentActivity() {
                         composable(Screens.MainScreen.route) { navBackStackEntry ->
                            DestinationScreen(
                                context = applicationContext,
-                               viewModel = navBackStackEntry.sharedViewModel(navController = navController)
+                               viewModel = navBackStackEntry.sharedViewModel(navController = navController),
+                               navController = navController
                            )
                         }
-                        // Add new application modules
+                        // Add new application modules as needed
                     }
                 }
             }

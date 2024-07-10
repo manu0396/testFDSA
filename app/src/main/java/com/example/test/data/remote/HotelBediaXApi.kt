@@ -1,4 +1,4 @@
-package com.example.test.data
+package com.example.test.data.remote
 
 import com.example.test.data.models.Destination
 import retrofit2.http.GET

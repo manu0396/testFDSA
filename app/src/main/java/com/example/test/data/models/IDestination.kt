@@ -1,5 +1,6 @@
 package com.example.test.data.models
 
+
 interface IDestination {
     fun GetAll(): List<Destination>
     fun DeleteById(id: Int)
