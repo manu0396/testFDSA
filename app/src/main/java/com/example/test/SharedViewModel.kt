@@ -5,14 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.test.domain.mapper.MainMapper
 import com.example.test.domain.models.DomainModel
-import com.example.test.domain.useCase.MainUseCase
+import com.example.test.domain.useCase.GetRemoteDestinationsUseCase
 import com.example.test.utils.WrapperResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -39,7 +37,7 @@ class SharedViewModel @Inject constructor(
    // val dataFix: StateFlow<String?> = _dataFix.asStateFlow()
 
     @Inject
-    lateinit var useCase: MainUseCase
+    lateinit var useCase: GetRemoteDestinationsUseCase
 
 
     fun getResults(context:Context){
