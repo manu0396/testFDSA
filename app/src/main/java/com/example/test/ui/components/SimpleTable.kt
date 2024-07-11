@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.test.domain.models.DestinationDomain
 
 @Composable
@@ -28,6 +29,7 @@ fun SimpleTable(
             Row(modifier = Modifier.fillMaxWidth()) {
                 for (colIndex in finalData[rowIndex].indices) {
                     Text(
+                        fontSize = 8.sp,
                         text = finalData[rowIndex][colIndex].toString(),
                         modifier = Modifier
                             .weight(1f)

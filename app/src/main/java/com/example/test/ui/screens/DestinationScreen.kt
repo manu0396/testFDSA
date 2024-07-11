@@ -111,10 +111,12 @@ fun DestinationScreen(
                             ).show()
                         },
                         shape = RoundedCornerShape(10),
-                        modifier = Modifier.sizeIn(minWidth = 60.dp, minHeight = 60.dp)
+                        modifier = Modifier
+                            .sizeIn(minWidth = 60.dp, minHeight = 60.dp)
                     ) {
                         Text(text = context.getString(R.string.createDestiny))
                     }
+                    Spacer(modifier = Modifier.width(16.dp)) // Add space between buttons
                     FloatingActionButton(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = Color.White,
@@ -124,10 +126,12 @@ fun DestinationScreen(
                             ).show()
                         },
                         shape = RoundedCornerShape(10),
-                        modifier = Modifier.sizeIn(minWidth = 60.dp, minHeight = 60.dp)
+                        modifier = Modifier
+                            .sizeIn(minWidth = 60.dp, minHeight = 60.dp)
                     ) {
                         Text(text = context.getString(R.string.modifyDestiny))
                     }
+                    Spacer(modifier = Modifier.width(16.dp)) // Add space between buttons
                     FloatingActionButton(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = Color.White,
@@ -137,7 +141,8 @@ fun DestinationScreen(
                             ).show()
                         },
                         shape = RoundedCornerShape(10),
-                        modifier = Modifier.sizeIn(minWidth = 60.dp, minHeight = 60.dp)
+                        modifier = Modifier
+                            .sizeIn(minWidth = 60.dp, minHeight = 60.dp)
                     ) {
                         Text(text = context.getString(R.string.removeDestiny))
                     }
