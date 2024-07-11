@@ -13,12 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.test.R
 import com.example.test.SharedViewModel
-import com.example.test.domain.models.DestinationDomain
+import com.example.test.data.models.Timestamp
 import com.example.test.ui.components.AppBar
+import com.example.test.ui.components.EditableTable
 import com.example.test.ui.components.H1Text
 import com.example.test.ui.components.H2Text
 import com.example.test.ui.components.SimpleAlertDialog
-import com.example.test.ui.components.SimpleTable
 import com.example.test.ui.components.VerticalDataSelector
 import com.example.test.ui.theme.TestTheme
 import com.example.test.utils.NetworkUtils
@@ -45,6 +45,8 @@ fun DestinationScreen(
     }else{
         localData
     }
+
+    val currentText = remember { mutableStateOf("") }
 
     TestTheme {
         if (showDialog) {
@@ -97,9 +99,39 @@ fun DestinationScreen(
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         } else {
-                            SimpleTable(
+                            EditableTable(
                                 data = filterData,
-                                modifier = Modifier.align(Alignment.Center)
+                                modifier = Modifier.align(Alignment.Center),
+                                onCellEdited = { rowIndex, colIndex, newValue ->
+                                    viewModel.data.value[rowIndex]?.let { destination ->
+                                        val updatedDestination = when (colIndex) {
+                                            0 -> destination.copy(id = newValue)
+                                            1 -> destination.copy(name = newValue)
+                                            2 -> destination.copy(description = newValue)
+                                            3 -> destination.copy(countryMode = newValue)
+                                            4 -> destination.copy(type = newValue)
+                                            5 -> destination.copy(picture = newValue)
+                                            6 -> destination.copy(lastModify = Timestamp(newValue.toLong()))
+                                            else -> destination
+                                        }
+                                        viewModel.updateData(rowIndex, updatedDestination)
+                                    }
+                                },
+                                onCellDeleted = { rowIndex, colIndex ->
+                                    viewModel.data.value[rowIndex]?.let { destination ->
+                                        val updatedDestination = when (colIndex) {
+                                            0 -> destination.copy(id = null)
+                                            1 -> destination.copy(name = null)
+                                            2 -> destination.copy(description = null)
+                                            3 -> destination.copy(countryMode = null)
+                                            4 -> destination.copy(type = null)
+                                            5 -> destination.copy(picture = null)
+                                            6 -> destination.copy(lastModify = null)
+                                            else -> destination
+                                        }
+                                        viewModel.updateData(rowIndex, updatedDestination)
+                                    }
+                                }
                             )
                         }
                     }

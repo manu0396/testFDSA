@@ -150,4 +150,15 @@ class SharedViewModel @Inject constructor(
 
         }
     }
+
+    fun updateData(index: Int, updatedDestination: DestinationDomain) {
+        val updatedList = data.value.toMutableList()
+        updatedList[index] = updatedDestination
+        if(_data.value.isNotEmpty()){
+            _data.value = listOf(updatedDestination)
+            _localData.value = listOf(updatedDestination)
+        }else{
+            _localData.value = listOf(updatedDestination)
+        }
+    }
 }
