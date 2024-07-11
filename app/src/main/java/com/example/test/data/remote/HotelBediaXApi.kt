@@ -4,7 +4,7 @@ import com.example.test.data.models.Destination
 import retrofit2.http.GET
 
 
-interface HotelBediaXApi {
+fun interface HotelBediaXApi {
 
     @GET("/api/destinations")
     suspend fun getAll(): List<Destination>

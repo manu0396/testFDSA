@@ -3,6 +3,7 @@ package com.example.test
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.test.data.models.Timestamp
 import com.example.test.domain.mapper.MainMapper
 import com.example.test.domain.models.DestinationDomain
 import com.example.test.domain.useCase.GetRemoteDestinationsUseCase
@@ -19,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SharedViewModel @Inject constructor(
     @ApplicationContext context: Context,
-): ViewModel() {
+) : ViewModel() {
 
     private val _showLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val showLoading: StateFlow<Boolean> = _showLoading.asStateFlow()
@@ -37,26 +38,65 @@ class SharedViewModel @Inject constructor(
     lateinit var useCase: GetRemoteDestinationsUseCase
 
 
-    fun getResults(context:Context){
+    fun getResults(context: Context) {
         try {
             _showLoading.value = true
             viewModelScope.launch {
-                when(val resp = useCase.getResults()){
-                    is WrapperResponse.Success ->{
+                /**
+                 * Mock data
+
+                _data.value = listOf(
+                DestinationDomain(
+                id = "1",
+                name = "Example Destination 1",
+                description = "A sample description for the destination.",
+                countryMode = "Country Mode 1",
+                type = "Destination Type 1",
+                picture = "https://example.com/image.jpg",
+                lastModify = Timestamp(System.currentTimeMillis())
+                ),
+                DestinationDomain(
+                id = "2",
+                name = "Example Destination 2",
+                description = "A sample description for the destination.",
+                countryMode = "Country Mode 2",
+                type = "Destination Type 2",
+                picture = "https://example.com/image.jpg",
+                lastModify = Timestamp(System.currentTimeMillis())
+                ),
+                DestinationDomain(
+                id = "3",
+                name = "Example Destination 3",
+                description = "A sample description for the destination.",
+                countryMode = "Country Mode 3",
+                type = "Destination Type 3",
+                picture = "https://example.com/image.jpg",
+                lastModify = Timestamp(System.currentTimeMillis())
+                )
+
+                )
+                _showLoading.value = false
+                 */
+
+                when (val resp = useCase.getResults()) {
+                    is WrapperResponse.Success -> {
                         resp.data?.let { destinations ->
-                            _data.value = destinations.map { MainMapper.destinationToDestionDomain(it) }
+                            _data.value =
+                                destinations.map { MainMapper.destinationToDestionDomain(it) }
                             //_dataFix.value = resp.data
                             _showLoading.value = false
                         }
                     }
-                    is WrapperResponse.Error ->{
+
+                    is WrapperResponse.Error -> {
                         _messageDialog.value = resp.message ?: context.getString(R.string.textError)
                         _showDialog.value = true
                         _showLoading.value = false
                     }
                 }
+
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             _messageDialog.value = e.message ?: context.getString(R.string.textError)
             _showDialog.value = true
             _showLoading.value = false
@@ -67,7 +107,7 @@ class SharedViewModel @Inject constructor(
         _showDialog.value = false
     }
 
-    fun onDialogConfirm(){
+    fun onDialogConfirm() {
         _showDialog.value = false
     }
 }

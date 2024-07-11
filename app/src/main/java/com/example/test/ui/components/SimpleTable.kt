@@ -11,7 +11,10 @@ import androidx.compose.ui.unit.dp
 import com.example.test.domain.models.DestinationDomain
 
 @Composable
-fun SimpleTable(data: List<DestinationDomain?>) {
+fun SimpleTable(
+    data: List<DestinationDomain?>,
+    modifier: Modifier = Modifier
+) {
     val filterList = data.filter {
         it?.name != null && it.description != null && it.countryMode != null && it.type != null && it.picture != null && it.lastModify != null
     }
@@ -20,7 +23,7 @@ fun SimpleTable(data: List<DestinationDomain?>) {
         filterList
     )
 
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
         items(finalData.size) { rowIndex ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 for (colIndex in finalData[rowIndex].indices) {
@@ -28,7 +31,8 @@ fun SimpleTable(data: List<DestinationDomain?>) {
                         text = finalData[rowIndex][colIndex].toString(),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(8.dp))
+                            .padding(8.dp)
+                    )
                 }
             }
         }
