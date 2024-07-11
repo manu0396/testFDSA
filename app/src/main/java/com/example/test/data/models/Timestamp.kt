@@ -1,7 +1,7 @@
 package com.example.test.data.models
 
 class Timestamp(
-    private var millis: Long
+    var millis: Long
 ) {
     companion object {
         fun now() = Timestamp(millisNow())

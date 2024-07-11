@@ -28,14 +28,14 @@ fun DestinationScreen(
     navController: NavController,
 ) {
     val data by viewModel.data.collectAsState()
+    LaunchedEffect(key1 = data) {
+        viewModel.getLocalData(context)
+        viewModel.getResults(context)
+    }
+    val localData by viewModel.localData.collectAsState()
     val showLoading by viewModel.showLoading.collectAsState()
     val showDialog by viewModel.showDialog.collectAsState()
     val messageDialog by viewModel.messageDialog.collectAsState()
-
-    LaunchedEffect(key1 = data) {
-        viewModel.getResults(context)
-    }
-
     TestTheme {
         if (showDialog) {
             SimpleAlertDialog(

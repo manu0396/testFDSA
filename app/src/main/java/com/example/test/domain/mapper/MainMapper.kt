@@ -1,8 +1,11 @@
 package com.example.test.domain.mapper
 
+import android.icu.util.Calendar
+import androidx.core.graphics.set
 import com.example.test.data.local.models.DestinationData
 import com.example.test.data.models.Destination
 import com.example.test.data.models.DestinationType
+import com.example.test.data.models.Timestamp
 import com.example.test.data.models.TimestampDTO
 import com.example.test.domain.models.DestinationDomain
 
@@ -47,5 +50,24 @@ object MainMapper {
             Type = DestinationType.valueOf(destinationDomain.type ?: ""),
             LastModify = TimestampDTO()
         )
+    }
+
+    fun destinationDataToDestionDomain(destinationData: DestinationData): DestinationDomain {
+        return DestinationDomain(
+            id = destinationData.Id,
+            name = destinationData.Name,
+            description = destinationData.Description,
+            countryMode = destinationData.CountryCode,
+            type = destinationData.Type,
+            lastModify = destinationData.LastModify.toTimestamp()
+        )
+    }
+
+
+    fun TimestampDTO.toTimestamp(): Timestamp {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day, hour, minute, second)
+        calendar.set(Calendar.MILLISECOND, millisecond)
+        return Timestamp(calendar.timeInMillis)
     }
 }

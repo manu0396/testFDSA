@@ -24,12 +24,12 @@ class GetLocalDestinationsUseCase @Inject constructor(
     }
 
     suspend fun insert(destinationData: DestinationData):WrapperResponse<Int>{
-        val resp = try {
+        try {
             localDatabaseUseCase.dao().insert(destinationData)
         }catch (e: Exception){
             return WrapperResponse.Error("Se ha producido un error: ${e.message}")
         }
-        return WrapperResponse.Success(resp)
+        return WrapperResponse.Success(1) // Rows inserted
     }
 
     suspend fun delete(destinationData: DestinationData): WrapperResponse<Int>{

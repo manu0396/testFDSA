@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.test.data.models.Timestamp
 import com.example.test.domain.mapper.MainMapper
 import com.example.test.domain.models.DestinationDomain
+import com.example.test.domain.useCase.GetLocalDestinationsUseCase
 import com.example.test.domain.useCase.GetRemoteDestinationsUseCase
 import com.example.test.utils.WrapperResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,8 +34,14 @@ class SharedViewModel @Inject constructor(
     private val _data: MutableStateFlow<List<DestinationDomain?>> = MutableStateFlow(listOf())
     val data: StateFlow<List<DestinationDomain?>> = _data.asStateFlow()
 
+    private val _localData: MutableStateFlow<List<DestinationDomain?>> = MutableStateFlow(listOf())
+    val localData: StateFlow<List<DestinationDomain?>> = _localData.asStateFlow()
+
     @Inject
-    lateinit var useCase: GetRemoteDestinationsUseCase
+    lateinit var GetRemoteDestinationUseCase: GetRemoteDestinationsUseCase
+
+    @Inject
+    lateinit var GetLocalDestinationsUseCase: GetLocalDestinationsUseCase
 
 
     fun getResults(context: Context) {
@@ -44,7 +50,7 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
                 /**
                  * Mock data
-
+                */
                 _data.value = listOf(
                 DestinationDomain(
                 id = "1",
@@ -76,14 +82,16 @@ class SharedViewModel @Inject constructor(
 
                 )
                 _showLoading.value = false
-                 */
 
-                when (val resp = useCase.getResults()) {
+/*
+                when (val resp = GetRemoteDestinationUseCase.getResults()) {
                     is WrapperResponse.Success -> {
                         resp.data?.let { destinations ->
                             _data.value =
-                                destinations.map { MainMapper.destinationToDestionDomain(it) }
-                            //_dataFix.value = resp.data
+                                destinations.map {
+                                    MainMapper.destinationToDestionDomain(it)
+                                }
+                            _localData.value = resp.data.map { MainMapper.destinationToDestionDomain(it) }
                             _showLoading.value = false
                         }
                     }
@@ -94,7 +102,7 @@ class SharedViewModel @Inject constructor(
                         _showLoading.value = false
                     }
                 }
-
+*/
             }
         } catch (e: Exception) {
             _messageDialog.value = e.message ?: context.getString(R.string.textError)
@@ -109,5 +117,35 @@ class SharedViewModel @Inject constructor(
 
     fun onDialogConfirm() {
         _showDialog.value = false
+    }
+
+    fun getLocalData(context: Context) {
+
+        try {
+            _showLoading.value = true
+            viewModelScope.launch {
+                when (val resp = GetLocalDestinationsUseCase.getResults()) {
+                    is WrapperResponse.Success -> {
+                        resp.data?.let { localData ->
+                            _localData.value =
+                                localData.map { MainMapper.destinationDataToDestionDomain(it) }
+                            _showLoading.value = false
+                        }
+                    }
+                        is WrapperResponse.Error -> {
+                            _messageDialog.value =
+                                resp.message ?: context.getString(R.string.textError)
+                            _showDialog.value = true
+                            _showLoading.value = false
+                        }
+
+                    }
+                }
+        } catch (e: Exception) {
+            _messageDialog.value = e.message ?: context.getString(R.string.textError)
+            _showDialog.value = true
+            _showLoading.value = false
+
+        }
     }
 }

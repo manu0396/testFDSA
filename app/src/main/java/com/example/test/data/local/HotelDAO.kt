@@ -12,7 +12,7 @@ import com.example.test.data.local.models.DestinationData
 @Dao
 interface HotelDAO {
    @Insert
-   suspend fun insert(destinationData: DestinationData): Int
+   suspend fun insert(destinationData: DestinationData)
 
    @Query("SELECT * FROM destinations")
    suspend fun getAll(): List<DestinationData>
@@ -24,5 +24,5 @@ interface HotelDAO {
    suspend fun update(destinationData: DestinationData): Int
 
    @Query("SELECT * FROM destinations WHERE id = :id")
-   suspend fun selectById(id: String)
+   suspend fun selectById(id: String): DestinationData
 }
