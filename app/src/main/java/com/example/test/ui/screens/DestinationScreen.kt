@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.test.R
 import com.example.test.SharedViewModel
+import com.example.test.domain.models.DestinationDomain
 import com.example.test.ui.components.AppBar
 import com.example.test.ui.components.H1Text
 import com.example.test.ui.components.H2Text
@@ -20,6 +21,7 @@ import com.example.test.ui.components.SimpleAlertDialog
 import com.example.test.ui.components.SimpleTable
 import com.example.test.ui.components.VerticalDataSelector
 import com.example.test.ui.theme.TestTheme
+import com.example.test.utils.NetworkUtils
 
 @Composable
 fun DestinationScreen(
@@ -31,11 +33,19 @@ fun DestinationScreen(
     LaunchedEffect(key1 = data) {
         viewModel.getLocalData(context)
         viewModel.getResults(context)
+        checkConnectivity(context)
     }
     val localData by viewModel.localData.collectAsState()
     val showLoading by viewModel.showLoading.collectAsState()
     val showDialog by viewModel.showDialog.collectAsState()
     val messageDialog by viewModel.messageDialog.collectAsState()
+
+    val filterData = if(checkConnectivity(context)){
+        data
+    }else{
+        localData
+    }
+
     TestTheme {
         if (showDialog) {
             SimpleAlertDialog(
@@ -81,14 +91,14 @@ fun DestinationScreen(
                     if (showLoading) {
                         CircularProgressIndicator()
                     } else {
-                        if (data.isEmpty()) {
+                        if (filterData.isEmpty()) {
                             H2Text(
                                 text = context.getString(R.string.no_data_found),
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         } else {
                             SimpleTable(
-                                data = data,
+                                data = filterData,
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }
@@ -162,5 +172,23 @@ fun DestinationScreen(
                 )
             }
         }
+    }
+}
+
+fun checkConnectivity(context: Context): Boolean {
+    return when {
+        NetworkUtils.isConnectedToWifi(context) -> {
+            // Device is connected to Wi-Fi
+            true
+        }
+        NetworkUtils.isConnectedToCellular(context) -> {
+            // Device is connected to cellular data (4G/LTE, etc.)
+            true
+        }
+        NetworkUtils.isOffline(context) -> {
+            // Device is offline
+            false
+        }
+        else -> false
     }
 }
