@@ -41,7 +41,6 @@ import com.example.test.ui.components.SimpleTable
 import com.example.test.ui.components.VerticalDataSelector
 import com.example.test.ui.theme.TestTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DestinationScreen(
     context: Context,
@@ -162,7 +161,6 @@ fun DestinationScreen(
 
                     // Vertical Data Selector
                     VerticalDataSelector(
-                        context = context,
                         data = data.mapNotNull { it?.id },
                         onItemSelected = {
                             Toast.makeText(

@@ -26,7 +26,6 @@ import com.example.test.R
 
 @Composable
 fun VerticalDataSelector(
-    context: Context,
     data: List<String>,
     onItemSelected: (String) -> Unit,
 ) {
