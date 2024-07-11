@@ -12,16 +12,16 @@ import com.example.test.data.local.models.DestinationData
 @Dao
 interface HotelDAO {
    @Insert
-   suspend fun insert(destinationData: DestinationData)
+   suspend fun insert(destinationData: DestinationData): Int
 
    @Query("SELECT * FROM destinations")
    suspend fun getAll(): List<DestinationData>
 
    @Delete
-   suspend fun delete(destinationData: DestinationData)
+   suspend fun delete(destinationData: DestinationData): Int
 
    @Update
-   suspend fun update(destinationData: DestinationData)
+   suspend fun update(destinationData: DestinationData): Int
 
    @Query("SELECT * FROM destinations WHERE id = :id")
    suspend fun selectById(id: String)

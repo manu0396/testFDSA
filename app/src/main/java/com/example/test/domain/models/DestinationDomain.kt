@@ -2,7 +2,7 @@ package com.example.test.domain.models
 
 import com.example.test.data.models.Timestamp
 
-data class DomainModel(
+data class DestinationDomain(
     val id: String? = null,
     val name:String? = null,
     val description:String? = null,
@@ -10,5 +10,4 @@ data class DomainModel(
     val type: String? = null,
     val picture:String? = null,
     val lastModify:Timestamp? = null
-
 )

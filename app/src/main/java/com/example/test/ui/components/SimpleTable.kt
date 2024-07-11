@@ -8,10 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.test.domain.models.DomainModel
+import com.example.test.domain.models.DestinationDomain
 
 @Composable
-fun SimpleTable(data: List<DomainModel?>) {
+fun SimpleTable(data: List<DestinationDomain?>) {
     val filterList = data.filter {
         it?.name != null && it.description != null && it.countryMode != null && it.type != null && it.picture != null && it.lastModify != null
     }

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.test.domain.mapper.MainMapper
-import com.example.test.domain.models.DomainModel
+import com.example.test.domain.models.DestinationDomain
 import com.example.test.domain.useCase.GetRemoteDestinationsUseCase
 import com.example.test.utils.WrapperResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,11 +30,8 @@ class SharedViewModel @Inject constructor(
     private val _messageDialog = MutableStateFlow(context.getString(R.string.textError))
     val messageDialog: StateFlow<String> = _messageDialog.asStateFlow()
 
-    private val _data: MutableStateFlow<List<DomainModel?>> = MutableStateFlow(listOf())
-    val data: StateFlow<List<DomainModel?>> = _data.asStateFlow()
-
-   // private val _dataFix: MutableStateFlow<String?> = MutableStateFlow("")
-   // val dataFix: StateFlow<String?> = _dataFix.asStateFlow()
+    private val _data: MutableStateFlow<List<DestinationDomain?>> = MutableStateFlow(listOf())
+    val data: StateFlow<List<DestinationDomain?>> = _data.asStateFlow()
 
     @Inject
     lateinit var useCase: GetRemoteDestinationsUseCase
@@ -46,8 +43,8 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
                 when(val resp = useCase.getResults()){
                     is WrapperResponse.Success ->{
-                        resp.data?.let {
-                            _data.value = MainMapper.convertMainModelToDomainModel(it)
+                        resp.data?.let { destinations ->
+                            _data.value = destinations.map { MainMapper.destinationToDestionDomain(it) }
                             //_dataFix.value = resp.data
                             _showLoading.value = false
                         }

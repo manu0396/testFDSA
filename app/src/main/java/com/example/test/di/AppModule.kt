@@ -1,5 +1,6 @@
 package com.example.test.di
 
+import com.example.test.BuildConfig
 import com.example.test.data.remote.ApiClient
 import com.example.test.data.remote.HotelBediaXApi
 import dagger.Module
@@ -21,7 +22,7 @@ class AppModule {
     fun provideAPi(): HotelBediaXApi {
         httpClient.addInterceptor(getInterceptor())
         return ApiClient(
-            baseUrl = Constants.BASE_URL,
+            baseUrl = BuildConfig.API_URL,
             converterFactory = GsonConverterFactory.create(),
             okHttpClientBuilder = httpClient
         ).createService(HotelBediaXApi::class.java)

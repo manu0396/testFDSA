@@ -1,6 +1,7 @@
 package com.example.test.data.remote
 
 
+import com.example.test.BuildConfig
 import com.google.gson.GsonBuilder
 import okhttp3.Call
 import okhttp3.Interceptor
@@ -13,7 +14,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 
 
 class ApiClient(
-    private var baseUrl: String = Constants.BASE_URL,
+    private var baseUrl: String = BuildConfig.API_URL,
     private val okHttpClientBuilder: OkHttpClient.Builder? = null,
     private val callFactory: Call.Factory? = null,
     private val converterFactory: Converter.Factory? = null,

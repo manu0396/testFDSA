@@ -22,4 +22,31 @@ class GetLocalDestinationsUseCase @Inject constructor(
         }
         return WrapperResponse.Success(resp)
     }
+
+    suspend fun insert(destinationData: DestinationData):WrapperResponse<Int>{
+        val resp = try {
+            localDatabaseUseCase.dao().insert(destinationData)
+        }catch (e: Exception){
+            return WrapperResponse.Error("Se ha producido un error: ${e.message}")
+        }
+        return WrapperResponse.Success(resp)
+    }
+
+    suspend fun delete(destinationData: DestinationData): WrapperResponse<Int>{
+        val resp = try {
+            localDatabaseUseCase.dao().delete(destinationData)
+        }catch (e: Exception){
+            return WrapperResponse.Error("Se ha producido un error: ${e.message}")
+        }
+        return WrapperResponse.Success(resp)
+    }
+
+    suspend fun getResultsById(id: String): WrapperResponse<List<DestinationData>> {
+        val resp = try {
+            localDatabaseUseCase.dao().getAll() //TODO: FIx this
+        }catch (e: Exception){
+            return WrapperResponse.Error("Se ha producido un error: ${e.message}")
+        }
+        return WrapperResponse.Success(resp)
+    }
 }

@@ -26,7 +26,7 @@ fun AppBar(
     actions: @Composable RowScope.() -> Unit = {},
     onBackClick: (() -> Unit)? = null,
 ) {
-    val colors = TopAppBarDefaults.smallTopAppBarColors(
+    val colors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.primary,
         titleContentColor = MaterialTheme.colorScheme.onPrimary,
         actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
