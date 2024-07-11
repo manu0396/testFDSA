@@ -216,7 +216,7 @@ fun DestinationScreen(
                     FloatingActionButton(
                         onClick = {
                             selectedRowIndex.value?.let { rowIndex ->
-                                viewModel.deleteDestination(rowIndex)
+                                viewModel.deleteDestination(context, rowIndex)
                                 selectedRowIndex.value = null
                             }
                         },

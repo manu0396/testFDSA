@@ -179,12 +179,17 @@ class SharedViewModel @Inject constructor(
         _localData.value = updatedLocalData
     }
 
-    fun deleteDestination(index: Int) {
-        val updatedData = _data.value.toMutableList()
-        updatedData.removeAt(index)
-        _data.value = updatedData
-        val updatedLocalData = _localData.value.toMutableList()
-        updatedLocalData.removeAt(index)
-        _localData.value = updatedLocalData
+    fun deleteDestination(context: Context, rowIndex: Int) {
+        if (rowIndex >= 0 && rowIndex < data.value.size) {
+            val updatedData = _data.value.toMutableList()
+            updatedData.removeAt(rowIndex)
+            _data.value = updatedData
+            val updatedLocalData = _localData.value.toMutableList()
+            updatedLocalData.removeAt(rowIndex)
+            _localData.value = updatedLocalData
+        }else{
+            _showDialog.value = true
+            _messageDialog.value = context.getString(R.string.textError)
+        }
     }
 }
