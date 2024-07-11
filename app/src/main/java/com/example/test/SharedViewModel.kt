@@ -49,8 +49,8 @@ class SharedViewModel @Inject constructor(
             _showLoading.value = true
             viewModelScope.launch {
                 /**
-                 * Mock data
-                */
+                 * Mock data: Descomentar este código y comentar el 'when' para testear la UI
+
                 _data.value = listOf(
                 DestinationDomain(
                 id = "1",
@@ -83,7 +83,9 @@ class SharedViewModel @Inject constructor(
                 )
                 _showLoading.value = false
 
-/*
+                 //END MOCK DATA
+*/
+
                 when (val resp = GetRemoteDestinationUseCase.getResults()) {
                     is WrapperResponse.Success -> {
                         resp.data?.let { destinations ->
@@ -102,7 +104,7 @@ class SharedViewModel @Inject constructor(
                         _showLoading.value = false
                     }
                 }
-*/
+
             }
         } catch (e: Exception) {
             _messageDialog.value = e.message ?: context.getString(R.string.textError)
