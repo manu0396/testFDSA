@@ -161,4 +161,30 @@ class SharedViewModel @Inject constructor(
             _localData.value = listOf(updatedDestination)
         }
     }
+    fun createDestination(newDestination: DestinationDomain) {
+        val updatedData = _data.value.toMutableList()
+        updatedData.add(newDestination)
+        _data.value = updatedData
+        val updatedLocalData = _localData.value.toMutableList()
+        updatedLocalData.add(newDestination)
+        _localData.value = updatedLocalData
+    }
+
+    fun updateDestination(index: Int, updatedDestination: DestinationDomain) {
+        val updatedData = _data.value.toMutableList()
+        updatedData[index] = updatedDestination
+        _data.value = updatedData
+        val updatedLocalData = _localData.value.toMutableList()
+        updatedLocalData[index] = updatedDestination
+        _localData.value = updatedLocalData
+    }
+
+    fun deleteDestination(index: Int) {
+        val updatedData = _data.value.toMutableList()
+        updatedData.removeAt(index)
+        _data.value = updatedData
+        val updatedLocalData = _localData.value.toMutableList()
+        updatedLocalData.removeAt(index)
+        _localData.value = updatedLocalData
+    }
 }
