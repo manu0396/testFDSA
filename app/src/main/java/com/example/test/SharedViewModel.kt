@@ -80,7 +80,7 @@ class SharedViewModel @Inject constructor(
             _showLoading.value = true
             viewModelScope.launch {
                 /**
-                 * MOCK DATA: Descomentar este código y comentar el 'when' para testear la UI
+                 * MOCK DATA: Descomentar este código y comentar el 'when' una vez el servidor de produccion este disponible.
                  */
                 _data.value = mutableMockData
 
@@ -195,7 +195,8 @@ class SharedViewModel @Inject constructor(
         } else {
             // Handle invalid index scenario
             Log.e("Update", "Invalid index $index for data or localData list")
-            // Optionally, you could show an error dialog or handle it in another appropriate way
+            _showDialog.value = true
+            _messageDialog.value = "Invalid index: row$index"
         }
     }
 
