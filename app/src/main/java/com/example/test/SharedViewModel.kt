@@ -38,6 +38,36 @@ class SharedViewModel @Inject constructor(
     private val _localData: MutableStateFlow<List<DestinationDomain?>> = MutableStateFlow(listOf())
     val localData: StateFlow<List<DestinationDomain?>> = _localData.asStateFlow()
 
+    private var mutableMockData : MutableList<DestinationDomain?> = mutableListOf(
+        DestinationDomain(
+            id = "1",
+            name = "Example Destination 1",
+            description = "A sample description for the destination.",
+            countryMode = "Country Mode 1",
+            type = "Destination Type 1",
+            picture = "https://example.com/image.jpg",
+            lastModify = Timestamp(System.currentTimeMillis())
+        ),
+        DestinationDomain(
+            id = "2",
+            name = "Example Destination 2",
+            description = "A sample description for the destination.",
+            countryMode = "Country Mode 2",
+            type = "Destination Type 2",
+            picture = "https://example.com/image.jpg",
+            lastModify = Timestamp(System.currentTimeMillis())
+        ),
+        DestinationDomain(
+            id = "3",
+            name = "Example Destination 3",
+            description = "A sample description for the destination.",
+            countryMode = "Country Mode 3",
+            type = "Destination Type 3",
+            picture = "https://example.com/image.jpg",
+            lastModify = Timestamp(System.currentTimeMillis())
+        )
+    )
+
     @Inject
     lateinit var GetRemoteDestinationUseCase: GetRemoteDestinationsUseCase
 
@@ -52,66 +82,10 @@ class SharedViewModel @Inject constructor(
                 /**
                  * MOCK DATA: Descomentar este código y comentar el 'when' para testear la UI
                  */
-                _data.value = listOf(
-                    DestinationDomain(
-                        id = "1",
-                        name = "Example Destination 1",
-                        description = "A sample description for the destination.",
-                        countryMode = "Country Mode 1",
-                        type = "Destination Type 1",
-                        picture = "https://example.com/image.jpg",
-                        lastModify = Timestamp(System.currentTimeMillis())
-                    ),
-                    DestinationDomain(
-                        id = "2",
-                        name = "Example Destination 2",
-                        description = "A sample description for the destination.",
-                        countryMode = "Country Mode 2",
-                        type = "Destination Type 2",
-                        picture = "https://example.com/image.jpg",
-                        lastModify = Timestamp(System.currentTimeMillis())
-                    ),
-                    DestinationDomain(
-                        id = "3",
-                        name = "Example Destination 3",
-                        description = "A sample description for the destination.",
-                        countryMode = "Country Mode 3",
-                        type = "Destination Type 3",
-                        picture = "https://example.com/image.jpg",
-                        lastModify = Timestamp(System.currentTimeMillis())
-                    )
+                _data.value = mutableMockData
 
-                )
-                _localData.value = listOf(
-                    DestinationDomain(
-                        id = "1",
-                        name = "Example Destination 1",
-                        description = "A sample description for the destination.",
-                        countryMode = "Country Mode 1",
-                        type = "Destination Type 1",
-                        picture = "https://example.com/image.jpg",
-                        lastModify = Timestamp(System.currentTimeMillis())
-                    ),
-                    DestinationDomain(
-                        id = "2",
-                        name = "Example Destination 2",
-                        description = "A sample description for the destination.",
-                        countryMode = "Country Mode 2",
-                        type = "Destination Type 2",
-                        picture = "https://example.com/image.jpg",
-                        lastModify = Timestamp(System.currentTimeMillis())
-                    ),
-                    DestinationDomain(
-                        id = "3",
-                        name = "Example Destination 3",
-                        description = "A sample description for the destination.",
-                        countryMode = "Country Mode 3",
-                        type = "Destination Type 3",
-                        picture = "https://example.com/image.jpg",
-                        lastModify = Timestamp(System.currentTimeMillis())
-                    )
+                _localData.value = mutableMockData
 
-                )
                 _showLoading.value = false
 
                 //END MOCK DATA
@@ -187,6 +161,7 @@ class SharedViewModel @Inject constructor(
         val updatedList = data.value.toMutableList()
         updatedList[index] = updatedDestination
         if (_data.value.isNotEmpty()) {
+            mutableMockData = listOf(updatedDestination).toMutableList()
             _data.value = listOf(updatedDestination)
             _localData.value = listOf(updatedDestination)
         } else {
@@ -201,6 +176,9 @@ class SharedViewModel @Inject constructor(
         val updatedLocalData = _localData.value.toMutableList()
         updatedLocalData.add(newDestination)
         _localData.value = updatedLocalData
+        val updateMockData = mutableMockData.toMutableList()
+        updateMockData.add(newDestination)
+        mutableMockData = updateMockData
     }
 
     fun updateDestination(index: Int, updatedDestination: DestinationDomain) {
@@ -213,6 +191,7 @@ class SharedViewModel @Inject constructor(
 
             currentLocalData[index] = updatedDestination
             _localData.value = currentLocalData
+            mutableMockData = currentData
         } else {
             // Handle invalid index scenario
             Log.e("Update", "Invalid index $index for data or localData list")
@@ -222,7 +201,7 @@ class SharedViewModel @Inject constructor(
 
     fun deleteDestination(context: Context, rowIndex: Int) {
         val currentData = _data.value.toMutableList()
-        val currentLocalData = _localData.value.toMutableList() //TODO: This is empty
+        val currentLocalData = _localData.value.toMutableList()
 
         if (rowIndex in currentData.indices && rowIndex in currentLocalData.indices) {
             currentData.removeAt(rowIndex)
@@ -230,6 +209,7 @@ class SharedViewModel @Inject constructor(
 
             currentLocalData.removeAt(rowIndex)
             _localData.value = currentLocalData
+            mutableMockData = currentData
         } else {
             // Handle invalid index scenario
             Log.e("Delete", "Invalid index $rowIndex for data or localData list")
