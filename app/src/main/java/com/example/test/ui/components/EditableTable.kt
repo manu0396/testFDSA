@@ -63,7 +63,7 @@ fun EditableTable(
         }
 
         items(data.size) { rowIndex ->
-            val isSelected = rowIndex == selectedRowIndex.value
+            val isSelected = rowIndex == selectedRowIndex.value // Check if the current row is selected
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

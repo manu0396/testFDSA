@@ -38,6 +38,7 @@ class SharedViewModel @Inject constructor(
     private val _localData: MutableStateFlow<List<DestinationDomain?>> = MutableStateFlow(listOf())
     val localData: StateFlow<List<DestinationDomain?>> = _localData.asStateFlow()
 
+    // REMOVE THIS VARIABLE WHEN PRODUCTION SERVER ARE OK
     private var mutableMockData : MutableList<DestinationDomain?> = mutableListOf(
         DestinationDomain(
             id = "1",
@@ -200,22 +201,21 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun deleteDestination(context: Context, rowIndex: Int) {
+    fun deleteDestination(rowIndex: Int) {
         val currentData = _data.value.toMutableList()
         val currentLocalData = _localData.value.toMutableList()
 
         if (rowIndex in currentData.indices && rowIndex in currentLocalData.indices) {
             currentData.removeAt(rowIndex)
-            _data.value = currentData
-
             currentLocalData.removeAt(rowIndex)
+            mutableMockData.removeAt(rowIndex)
+            _data.value = currentData
             _localData.value = currentLocalData
-            mutableMockData = currentData
         } else {
             // Handle invalid index scenario
             Log.e("Delete", "Invalid index $rowIndex for data or localData list")
             _showDialog.value = true
-            _messageDialog.value = "Invalid index: row$rowIndex"
+            _messageDialog.value = "Invalid index: row $rowIndex"
         }
     }
 }

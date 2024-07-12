@@ -157,7 +157,7 @@ fun DestinationScreen(
                                     }
                                 },
                                 onCellDeleted = { rowIndex, _ ->
-                                    viewModel.deleteDestination(context, rowIndex)
+                                    viewModel.deleteDestination(rowIndex)
                                 },
                                 onCellSelected = { rowIndex ->
                                     selectedRowIndex.value = rowIndex
@@ -206,7 +206,7 @@ fun DestinationScreen(
                     FloatingActionButton(
                         onClick = {
                             selectedRowIndex.value?.let { rowIndex ->
-                                viewModel.deleteDestination(context, rowIndex)
+                                viewModel.deleteDestination(rowIndex)
                                 selectedRowIndex.value = null
                             }
                         },
