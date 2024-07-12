@@ -171,21 +171,20 @@ class SharedViewModel @Inject constructor(
     }
 
     fun updateDestination(index: Int, updatedDestination: DestinationDomain) {
-        // Update your MutableStateFlow variables
-        val currentData = _data.value.toMutableList()
-        val currentLocalData = _localData.value.toMutableList()
+        // Create new lists to trigger recomposition
+        val newData = _data.value.toMutableList()
+        val newLocalData = _localData.value.toMutableList()
 
-        if (index >= 0 && index < currentData.size && index < currentLocalData.size) {
-            currentData[index] = updatedDestination
-            _data.value = currentData   // Trigger recomposition
+        if (index >= 0 && index < newData.size && index < newLocalData.size) {
+            newData[index] = updatedDestination
+            newLocalData[index] = updatedDestination
 
-            currentLocalData[index] = updatedDestination
-            _localData.value = currentLocalData  // Trigger recomposition
+            // Update the MutableStateFlow with new list instances
+            _data.value = newData
+            _localData.value = newLocalData
 
             // Ensure any other necessary state updates
-            mutableMockData = currentData
-
-            // Trigger UI update if necessary
+            mutableMockData = newData
 
         } else {
             // Handle invalid index scenario
@@ -194,7 +193,6 @@ class SharedViewModel @Inject constructor(
             _messageDialog.value = "Invalid index: row$index"
         }
     }
-
     fun deleteDestination(rowIndex: Int) {
         val currentData = _data.value.toMutableList()
         val currentLocalData = _localData.value.toMutableList()

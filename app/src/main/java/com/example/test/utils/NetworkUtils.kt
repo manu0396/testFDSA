@@ -21,4 +21,23 @@ object NetworkUtils {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return connectivityManager.activeNetwork == null
     }
+
+    // Function to check connectivity (extracted for reusability)
+    fun checkConnectivity(context: Context): Boolean {
+        return when {
+            NetworkUtils.isConnectedToWifi(context) -> {
+                // Device is connected to Wi-Fi
+                true
+            }
+            NetworkUtils.isConnectedToCellular(context) -> {
+                // Device is connected to cellular data (4G/LTE, etc.)
+                true
+            }
+            NetworkUtils.isOffline(context) -> {
+                // Device is offline
+                false
+            }
+            else -> false
+        }
+    }
 }

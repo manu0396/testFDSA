@@ -19,6 +19,7 @@ import com.example.test.ui.theme.TestTheme
 import com.example.test.utils.DateUtils
 import com.example.test.utils.DateUtils.formatDateFromMillis
 import com.example.test.utils.NetworkUtils
+import com.example.test.utils.NetworkUtils.checkConnectivity
 
 @Composable
 fun DestinationScreen(
@@ -61,7 +62,7 @@ fun DestinationScreen(
     var isModifyMode by remember { mutableStateOf(false) }
 
     // Launched effect to trigger initial data fetching
-    LaunchedEffect(key1 = data) {
+    LaunchedEffect(key1 = filterData) {
         viewModel.getResults(context)
         checkConnectivity(context)
     }
@@ -160,7 +161,7 @@ fun DestinationScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                         .align(Alignment.BottomCenter),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -418,24 +419,5 @@ fun DestinationScreen(
                 }
             }
         }
-    }
-}
-
-// Function to check connectivity (extracted for reusability)
-fun checkConnectivity(context: Context): Boolean {
-    return when {
-        NetworkUtils.isConnectedToWifi(context) -> {
-            // Device is connected to Wi-Fi
-            true
-        }
-        NetworkUtils.isConnectedToCellular(context) -> {
-            // Device is connected to cellular data (4G/LTE, etc.)
-            true
-        }
-        NetworkUtils.isOffline(context) -> {
-            // Device is offline
-            false
-        }
-        else -> false
     }
 }
