@@ -104,12 +104,33 @@ fun DestinationScreen(
                         .align(Alignment.TopCenter)
                         .padding(16.dp)
                 )
-
+// Search and Filter Column
+                Column(
+                    verticalArrangement = Arrangement.Top,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp)
+                ) {
+                    // VerticalDataSelector
+                    VerticalDataSelector(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        data = filterData.map { it?.name ?: "" },
+                        onItemSelected = { selectedItem ->
+                            // Handle item selection
+                            val index = filterData.indexOfFirst { it?.name == selectedItem }
+                            if (index >= 0) {
+                                selectedRowIndex.value = index
+                            }
+                        }
+                    )
+                }
                 // Loading or Error message when data is loading or empty
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 64.dp, bottom = 200.dp),
+                        .padding(top = 120.dp, bottom = 120.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (showLoading) {
