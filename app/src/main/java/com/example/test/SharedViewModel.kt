@@ -158,20 +158,6 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun updateData(index: Int, updatedDestination: DestinationDomain) {
-        val updatedDataList = _data.value.toMutableList()
-        updatedDataList[index] = updatedDestination
-        _data.value = updatedDataList
-
-        // Assuming _localData should also be updated in this function
-        val updatedLocalDataList = _localData.value.toMutableList()
-        updatedLocalDataList[index] = updatedDestination
-        _localData.value = updatedLocalDataList
-
-        // Ensure mutableMockData is updated accordingly
-        mutableMockData = updatedDataList
-    }
-
     fun createDestination(newDestination: DestinationDomain) {
         val updatedData = _data.value.toMutableList()
         updatedData.add(newDestination)
@@ -184,7 +170,7 @@ class SharedViewModel @Inject constructor(
         mutableMockData = updateMockData
     }
 
-    fun updateDestination(index: Int, updatedDestination: DestinationDomain) {
+    fun updateDestination(context: Context, index: Int, updatedDestination: DestinationDomain) {
         val currentData = _data.value.toMutableList()
         val currentLocalData = _localData.value.toMutableList()
 
@@ -195,6 +181,7 @@ class SharedViewModel @Inject constructor(
             currentLocalData[index] = updatedDestination
             _localData.value = currentLocalData
             mutableMockData = currentData
+
         } else {
             // Handle invalid index scenario
             Log.e("Update", "Invalid index $index for data or localData list")
