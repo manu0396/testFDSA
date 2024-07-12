@@ -17,6 +17,7 @@ import com.example.test.domain.models.DestinationDomain
 import com.example.test.ui.components.*
 import com.example.test.ui.theme.TestTheme
 import com.example.test.utils.DateUtils
+import com.example.test.utils.DateUtils.formatDateFromMillis
 import com.example.test.utils.NetworkUtils
 
 @Composable
@@ -258,7 +259,7 @@ fun DestinationScreen(
                                 Text("Last Modify:")
                                 Spacer(modifier = Modifier.height(8.dp))
                                 TextField(
-                                    value = createDestinationLastModify.toString(),
+                                    value = if(createDestinationLastModify == 0L) formatDateFromMillis(System.currentTimeMillis()) else formatDateFromMillis(createDestinationLastModify),
                                     onValueChange = { it: String ->
                                         createDestinationLastModify = it.toLongOrNull() ?: System.currentTimeMillis()
                                                     },
