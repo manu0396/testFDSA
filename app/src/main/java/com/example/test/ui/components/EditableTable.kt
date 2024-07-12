@@ -3,14 +3,10 @@ package com.example.test.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -19,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -34,6 +29,7 @@ fun EditableTable(
     onCellDeleted: (rowIndex: Int, colIndex: Int) -> Unit,
     onCellSelected: (rowIndex: Int) -> Unit,
     selectedRowIndex: MutableState<Int?>,
+    isModifyMode: Boolean,
     modifier: Modifier = Modifier
 ) {
     val headers = listOf(
@@ -74,7 +70,9 @@ fun EditableTable(
                     .padding(vertical = 8.dp, horizontal = 4.dp)
                     .background(if (isSelected) Color.LightGray else Color.Transparent)
                     .clickable {
-                        onCellSelected(rowIndex)
+                        if (!isModifyMode) {
+                            onCellSelected(rowIndex)
+                        }
                     }
             ) {
                 val rowData = data[rowIndex]
@@ -88,22 +86,35 @@ fun EditableTable(
                     rowData?.lastModify.toString()
                 ).forEachIndexed { colIndex, value ->
                     var cellValue by remember { mutableStateOf(value) }
-                    TextField(
-                        value = cellValue,
-                        onValueChange = { newValue ->
-                            cellValue = newValue
-                            onCellEdited(rowIndex, colIndex, newValue)
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp)
-                            .fillMaxWidth()
-                            .pointerInput(Unit) {
-                                detectTapGestures(onDoubleTap = {
-                                    onCellDeleted(rowIndex, colIndex)
-                                })
-                            }
-                    )
+
+                    // Enable editing only if isModifyMode is true
+                    if (isModifyMode) {
+                        TextField(
+                            value = cellValue,
+                            onValueChange = { newValue ->
+                                cellValue = newValue
+                                onCellEdited(rowIndex, colIndex, newValue)
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(4.dp)
+                                .fillMaxWidth()
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onDoubleTap = {
+                                        onCellDeleted(rowIndex, colIndex)
+                                    })
+                                }
+                        )
+                    } else {
+                        // Display non-editable text
+                        Text(
+                            text = cellValue,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(4.dp)
+                                .fillMaxWidth()
+                        )
+                    }
                 }
             }
         }

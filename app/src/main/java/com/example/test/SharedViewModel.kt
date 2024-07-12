@@ -1,6 +1,7 @@
 package com.example.test
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.test.data.models.Timestamp
@@ -50,61 +51,61 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
                 /**
                  * MOCK DATA: Descomentar este código y comentar el 'when' para testear la UI
-                */
+                 */
                 _data.value = listOf(
-                DestinationDomain(
-                id = "1",
-                name = "Example Destination 1",
-                description = "A sample description for the destination.",
-                countryMode = "Country Mode 1",
-                type = "Destination Type 1",
-                picture = "https://example.com/image.jpg",
-                lastModify = Timestamp(System.currentTimeMillis())
-                ),
-                DestinationDomain(
-                id = "2",
-                name = "Example Destination 2",
-                description = "A sample description for the destination.",
-                countryMode = "Country Mode 2",
-                type = "Destination Type 2",
-                picture = "https://example.com/image.jpg",
-                lastModify = Timestamp(System.currentTimeMillis())
-                ),
-                DestinationDomain(
-                id = "3",
-                name = "Example Destination 3",
-                description = "A sample description for the destination.",
-                countryMode = "Country Mode 3",
-                type = "Destination Type 3",
-                picture = "https://example.com/image.jpg",
-                lastModify = Timestamp(System.currentTimeMillis())
-                )
+                    DestinationDomain(
+                        id = "1",
+                        name = "Example Destination 1",
+                        description = "A sample description for the destination.",
+                        countryMode = "Country Mode 1",
+                        type = "Destination Type 1",
+                        picture = "https://example.com/image.jpg",
+                        lastModify = Timestamp(System.currentTimeMillis())
+                    ),
+                    DestinationDomain(
+                        id = "2",
+                        name = "Example Destination 2",
+                        description = "A sample description for the destination.",
+                        countryMode = "Country Mode 2",
+                        type = "Destination Type 2",
+                        picture = "https://example.com/image.jpg",
+                        lastModify = Timestamp(System.currentTimeMillis())
+                    ),
+                    DestinationDomain(
+                        id = "3",
+                        name = "Example Destination 3",
+                        description = "A sample description for the destination.",
+                        countryMode = "Country Mode 3",
+                        type = "Destination Type 3",
+                        picture = "https://example.com/image.jpg",
+                        lastModify = Timestamp(System.currentTimeMillis())
+                    )
 
                 )
                 _showLoading.value = false
 
-                 //END MOCK DATA
-/* // COMENTAR ESTA LINEA PARA TESTEAR LA UI
+                //END MOCK DATA
+                /* // COMENTAR ESTA LINEA PARA TESTEAR LA UI
 
-                when (val resp = GetRemoteDestinationUseCase.getResults()) {
-                    is WrapperResponse.Success -> {
-                        resp.data?.let { destinations ->
-                            _data.value =
-                                destinations.map {
-                                    MainMapper.destinationToDestionDomain(it)
+                                when (val resp = GetRemoteDestinationUseCase.getResults()) {
+                                    is WrapperResponse.Success -> {
+                                        resp.data?.let { destinations ->
+                                            _data.value =
+                                                destinations.map {
+                                                    MainMapper.destinationToDestionDomain(it)
+                                                }
+                                            _localData.value = resp.data.map { MainMapper.destinationToDestionDomain(it) }
+                                            _showLoading.value = false
+                                        }
+                                    }
+
+                                    is WrapperResponse.Error -> {
+                                        _messageDialog.value = resp.message ?: context.getString(R.string.textError)
+                                        _showDialog.value = true
+                                        _showLoading.value = false
+                                    }
                                 }
-                            _localData.value = resp.data.map { MainMapper.destinationToDestionDomain(it) }
-                            _showLoading.value = false
-                        }
-                    }
-
-                    is WrapperResponse.Error -> {
-                        _messageDialog.value = resp.message ?: context.getString(R.string.textError)
-                        _showDialog.value = true
-                        _showLoading.value = false
-                    }
-                }
-*/ //COMENTAR ESTA LINEA PARA TESTEAR LA UI
+                */ //COMENTAR ESTA LINEA PARA TESTEAR LA UI
             }
         } catch (e: Exception) {
             _messageDialog.value = e.message ?: context.getString(R.string.textError)
@@ -134,15 +135,16 @@ class SharedViewModel @Inject constructor(
                             _showLoading.value = false
                         }
                     }
-                        is WrapperResponse.Error -> {
-                            _messageDialog.value =
-                                resp.message ?: context.getString(R.string.textError)
-                            _showDialog.value = true
-                            _showLoading.value = false
-                        }
 
+                    is WrapperResponse.Error -> {
+                        _messageDialog.value =
+                            resp.message ?: context.getString(R.string.textError)
+                        _showDialog.value = true
+                        _showLoading.value = false
                     }
+
                 }
+            }
         } catch (e: Exception) {
             _messageDialog.value = e.message ?: context.getString(R.string.textError)
             _showDialog.value = true
@@ -154,13 +156,14 @@ class SharedViewModel @Inject constructor(
     fun updateData(index: Int, updatedDestination: DestinationDomain) {
         val updatedList = data.value.toMutableList()
         updatedList[index] = updatedDestination
-        if(_data.value.isNotEmpty()){
+        if (_data.value.isNotEmpty()) {
             _data.value = listOf(updatedDestination)
             _localData.value = listOf(updatedDestination)
-        }else{
+        } else {
             _localData.value = listOf(updatedDestination)
         }
     }
+
     fun createDestination(newDestination: DestinationDomain) {
         val updatedData = _data.value.toMutableList()
         updatedData.add(newDestination)
@@ -180,14 +183,23 @@ class SharedViewModel @Inject constructor(
     }
 
     fun deleteDestination(context: Context, rowIndex: Int) {
-        if (rowIndex >= 0 && rowIndex < data.value.size) {
-            val updatedData = _data.value.toMutableList()
-            updatedData.removeAt(rowIndex)
-            _data.value = updatedData
-            val updatedLocalData = _localData.value.toMutableList()
-            updatedLocalData.removeAt(rowIndex)
-            _localData.value = updatedLocalData
-        }else{
+        val currentData = _data.value.toMutableList()
+        val currentLocalData = _localData.value.toMutableList()
+        try {
+            if (rowIndex in currentData.indices && rowIndex in currentLocalData.indices) {
+                currentData.removeAt(rowIndex)
+                _data.value = currentData
+
+                currentLocalData.removeAt(rowIndex)
+                _localData.value = currentLocalData
+            } else {
+                // Handle invalid index scenario
+                Log.e("Delete", "Invalid index $rowIndex for data or localData list")
+                _showDialog.value = true
+                _messageDialog.value = context.getString(R.string.textError)
+            }
+        } catch (e: Exception) {
+            Log.e("Delete", "Exception: ${e.message}")
             _showDialog.value = true
             _messageDialog.value = context.getString(R.string.textError)
         }

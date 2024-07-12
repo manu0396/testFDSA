@@ -69,6 +69,9 @@ fun DestinationScreen(
     var createDestinationName by remember { mutableStateOf("") }
     var createDestinationDescription by remember { mutableStateOf("") }
 
+    // State for managing modify mode
+    var isModifyMode by remember { mutableStateOf(false) }
+
     // Launched effect to trigger initial data fetching
     LaunchedEffect(key1 = data) {
         viewModel.getLocalData(context)
@@ -173,7 +176,8 @@ fun DestinationScreen(
                                 onCellSelected = { rowIndex ->
                                     selectedRowIndex.value = rowIndex
                                 },
-                                selectedRowIndex = selectedRowIndex
+                                selectedRowIndex = selectedRowIndex,
+                                isModifyMode = isModifyMode
                             )
                         }
                     }
