@@ -82,6 +82,36 @@ class SharedViewModel @Inject constructor(
                     )
 
                 )
+                _localData.value = listOf(
+                    DestinationDomain(
+                        id = "1",
+                        name = "Example Destination 1",
+                        description = "A sample description for the destination.",
+                        countryMode = "Country Mode 1",
+                        type = "Destination Type 1",
+                        picture = "https://example.com/image.jpg",
+                        lastModify = Timestamp(System.currentTimeMillis())
+                    ),
+                    DestinationDomain(
+                        id = "2",
+                        name = "Example Destination 2",
+                        description = "A sample description for the destination.",
+                        countryMode = "Country Mode 2",
+                        type = "Destination Type 2",
+                        picture = "https://example.com/image.jpg",
+                        lastModify = Timestamp(System.currentTimeMillis())
+                    ),
+                    DestinationDomain(
+                        id = "3",
+                        name = "Example Destination 3",
+                        description = "A sample description for the destination.",
+                        countryMode = "Country Mode 3",
+                        type = "Destination Type 3",
+                        picture = "https://example.com/image.jpg",
+                        lastModify = Timestamp(System.currentTimeMillis())
+                    )
+
+                )
                 _showLoading.value = false
 
                 //END MOCK DATA
@@ -174,34 +204,37 @@ class SharedViewModel @Inject constructor(
     }
 
     fun updateDestination(index: Int, updatedDestination: DestinationDomain) {
-        val updatedData = _data.value.toMutableList()
-        updatedData[index] = updatedDestination
-        _data.value = updatedData
-        val updatedLocalData = _localData.value.toMutableList()
-        updatedLocalData[index] = updatedDestination
-        _localData.value = updatedLocalData
+        val currentData = _data.value.toMutableList()
+        val currentLocalData = _localData.value.toMutableList()
+
+        if (index >= 0 && index < currentData.size && index < currentLocalData.size) {
+            currentData[index] = updatedDestination
+            _data.value = currentData
+
+            currentLocalData[index] = updatedDestination
+            _localData.value = currentLocalData
+        } else {
+            // Handle invalid index scenario
+            Log.e("Update", "Invalid index $index for data or localData list")
+            // Optionally, you could show an error dialog or handle it in another appropriate way
+        }
     }
 
     fun deleteDestination(context: Context, rowIndex: Int) {
         val currentData = _data.value.toMutableList()
-        val currentLocalData = _localData.value.toMutableList()
-        try {
-            if (rowIndex in currentData.indices && rowIndex in currentLocalData.indices) {
-                currentData.removeAt(rowIndex)
-                _data.value = currentData
+        val currentLocalData = _localData.value.toMutableList() //TODO: This is empty
 
-                currentLocalData.removeAt(rowIndex)
-                _localData.value = currentLocalData
-            } else {
-                // Handle invalid index scenario
-                Log.e("Delete", "Invalid index $rowIndex for data or localData list")
-                _showDialog.value = true
-                _messageDialog.value = context.getString(R.string.textError)
-            }
-        } catch (e: Exception) {
-            Log.e("Delete", "Exception: ${e.message}")
+        if (rowIndex in currentData.indices && rowIndex in currentLocalData.indices) {
+            currentData.removeAt(rowIndex)
+            _data.value = currentData
+
+            currentLocalData.removeAt(rowIndex)
+            _localData.value = currentLocalData
+        } else {
+            // Handle invalid index scenario
+            Log.e("Delete", "Invalid index $rowIndex for data or localData list")
             _showDialog.value = true
-            _messageDialog.value = context.getString(R.string.textError)
+            _messageDialog.value = "Invalid index: row$rowIndex"
         }
     }
 }

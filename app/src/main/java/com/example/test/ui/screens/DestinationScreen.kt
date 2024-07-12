@@ -157,21 +157,8 @@ fun DestinationScreen(
                                         viewModel.updateData(rowIndex, updatedDestination)
                                     }
                                 },
-                                onCellDeleted = { rowIndex, colIndex ->
-                                    viewModel.data.value[rowIndex]?.let { destination ->
-                                        val updatedDestination = when (colIndex) {
-                                            // Handle numeric fields (like lastModify as Long)
-                                            0 -> destination.copy(id = null)
-                                            1 -> destination.copy(name = null)
-                                            2 -> destination.copy(description = null)
-                                            3 -> destination.copy(countryMode = null)
-                                            4 -> destination.copy(type = null)
-                                            5 -> destination.copy(picture = null)
-                                            6 -> destination.copy(lastModify = null)
-                                            else -> destination
-                                        }
-                                        viewModel.updateData(rowIndex, updatedDestination)
-                                    }
+                                onCellDeleted = { rowIndex, _ ->
+                                    viewModel.deleteDestination(context, rowIndex)
                                 },
                                 onCellSelected = { rowIndex ->
                                     selectedRowIndex.value = rowIndex
