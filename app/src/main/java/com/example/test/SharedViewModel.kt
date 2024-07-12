@@ -159,15 +159,17 @@ class SharedViewModel @Inject constructor(
     }
 
     fun updateData(index: Int, updatedDestination: DestinationDomain) {
-        val updatedList = data.value.toMutableList()
-        updatedList[index] = updatedDestination
-        if (_data.value.isNotEmpty()) {
-            mutableMockData = listOf(updatedDestination).toMutableList()
-            _data.value = listOf(updatedDestination)
-            _localData.value = listOf(updatedDestination)
-        } else {
-            _localData.value = listOf(updatedDestination)
-        }
+        val updatedDataList = _data.value.toMutableList()
+        updatedDataList[index] = updatedDestination
+        _data.value = updatedDataList
+
+        // Assuming _localData should also be updated in this function
+        val updatedLocalDataList = _localData.value.toMutableList()
+        updatedLocalDataList[index] = updatedDestination
+        _localData.value = updatedLocalDataList
+
+        // Ensure mutableMockData is updated accordingly
+        mutableMockData = updatedDataList
     }
 
     fun createDestination(newDestination: DestinationDomain) {
@@ -217,5 +219,10 @@ class SharedViewModel @Inject constructor(
             _showDialog.value = true
             _messageDialog.value = "Invalid index: row $rowIndex"
         }
+    }
+
+    fun showDialog(string: String) {
+        _showDialog.value = true
+        _messageDialog.value = string
     }
 }

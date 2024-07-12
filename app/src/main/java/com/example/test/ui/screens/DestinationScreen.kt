@@ -1,6 +1,8 @@
 package com.example.test.ui.screens
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -121,7 +123,6 @@ fun DestinationScreen(
                                 onCellEdited = { rowIndex, colIndex, newValue ->
                                     viewModel.data.value[rowIndex]?.let { destination ->
                                         val updatedDestination = when (colIndex) {
-                                            // Handle numeric fields (like lastModify as Long)
                                             0 -> destination.copy(id = newValue)
                                             1 -> destination.copy(name = newValue)
                                             2 -> destination.copy(description = newValue)
@@ -129,7 +130,7 @@ fun DestinationScreen(
                                             4 -> destination.copy(type = newValue)
                                             5 -> destination.copy(picture = newValue)
                                             6 -> {
-                                                val timestampValue = if (newValue.isNotEmpty()) newValue.toLong() else 0L
+                                                val timestampValue = newValue.toLongOrNull() ?: 0L
                                                 destination.copy(lastModify = Timestamp(timestampValue))
                                             }
                                             else -> destination
@@ -172,6 +173,7 @@ fun DestinationScreen(
                     FloatingActionButton(
                         onClick = {
                             selectedRowIndex.value?.let { rowIndex ->
+                                Log.d("Row", "modifyrow row: $rowIndex")
                                 showDialogModify = true
                                 val selectedDestination = filterData[rowIndex]
                                 createDestinationName = selectedDestination?.name ?: ""
@@ -180,6 +182,11 @@ fun DestinationScreen(
                                 createDestinationType = selectedDestination?.type ?: ""
                                 createDestinationPicture = selectedDestination?.picture ?: ""
                                 createDestinationLastModify = selectedDestination?.lastModify?.millis ?: 0L
+                                if (selectedDestination != null) {
+                                    viewModel.updateDestination(rowIndex, selectedDestination)
+                                }else{
+                                    viewModel.showDialog(context.getString(R.string.error_modify))
+                                }
                             }
                         },
                         modifier = Modifier.weight(1f)
@@ -191,8 +198,8 @@ fun DestinationScreen(
                     FloatingActionButton(
                         onClick = {
                             selectedRowIndex.value?.let { rowIndex ->
+                                Log.d("Row", "delete row: $rowIndex")
                                 showDialogDelete = true
-                                selectedRowIndex.value = rowIndex
                             }
                         },
                         modifier = Modifier.weight(1f)
