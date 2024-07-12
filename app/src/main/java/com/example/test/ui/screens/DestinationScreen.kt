@@ -34,10 +34,14 @@ fun DestinationScreen(
     val messageDialog by viewModel.messageDialog.collectAsState()
 
     // Check connectivity and determine which data to display
-    val filterData = if (checkConnectivity(context)) {
-        data
-    } else {
-        localData
+    val filterData by remember(data, localData) {
+        derivedStateOf {
+            if (checkConnectivity(context)) {
+                data
+            } else {
+                localData
+            }
+        }
     }
 
     // State for managing selected row index
