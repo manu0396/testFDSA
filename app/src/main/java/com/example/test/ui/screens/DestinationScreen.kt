@@ -46,8 +46,12 @@ fun DestinationScreen(
     }
 
     // State for managing selected row index
-    val selectedRowIndex = remember { mutableStateOf<Int?>(null) }
-
+    var selectedRowIndex = remember { mutableStateOf(viewModel.selectedRowIndex.value) }
+    LaunchedEffect(key1 = viewModel.selectedRowIndex) {
+        viewModel.selectedRowIndex.collect { index ->
+            selectedRowIndex.value = index
+        }
+    }
     // State for managing create and modify dialogs
     var showDialogCreate by remember { mutableStateOf(false) }
     var showDialogModify by remember { mutableStateOf(false) }
@@ -57,7 +61,13 @@ fun DestinationScreen(
     var createDestinationCountryMode by remember { mutableStateOf("") }
     var createDestinationType by remember { mutableStateOf("") }
     var createDestinationPicture by remember { mutableStateOf("") }
-    var createDestinationLastModify by remember { mutableLongStateOf(DateUtils.extractMilliseconds(System.currentTimeMillis().toString())) }
+    var createDestinationLastModify by remember {
+        mutableLongStateOf(
+            DateUtils.extractMilliseconds(
+                System.currentTimeMillis().toString()
+            )
+        )
+    }
     // State for managing modify mode
     var isModifyMode by remember { mutableStateOf(false) }
 
@@ -104,7 +114,7 @@ fun DestinationScreen(
                         .align(Alignment.TopCenter)
                         .padding(16.dp)
                 )
-// Search and Filter Column
+                // Search and Filter Column
                 Column(
                     verticalArrangement = Arrangement.Top,
                     modifier = Modifier
@@ -112,19 +122,34 @@ fun DestinationScreen(
                         .padding(32.dp)
                 ) {
                     // VerticalDataSelector
+                    var selectedItem by remember { mutableStateOf("") }
+
                     VerticalDataSelector(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
                         data = filterData.map { it?.name ?: "" },
-                        onItemSelected = { selectedItem ->
-                            // Handle item selection
+                        onItemSelected = { selected ->
+                            selectedItem = selected
+                        },
+                        viewModel = viewModel
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
                             val index = filterData.indexOfFirst { it?.name == selectedItem }
                             if (index >= 0) {
-                                selectedRowIndex.value = index
+                                selectedRowIndex = mutableStateOf(index)
+                            } else {
+                                Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
                             }
-                        }
-                    )
+                        },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Search")
+                    }
                 }
                 // Loading or Error message when data is loading or empty
                 Box(
@@ -144,6 +169,8 @@ fun DestinationScreen(
                         } else {
                             // Display EditableTable with data
                             // Inside EditableTable composable function
+                            val selectedRowIndexState =
+                                remember { mutableStateOf(selectedRowIndex) }
                             EditableTable(
                                 data = filterData,
                                 modifier = Modifier.align(Alignment.Center),
@@ -158,8 +185,13 @@ fun DestinationScreen(
                                             5 -> destination.copy(picture = newValue)
                                             6 -> {
                                                 val timestampValue = newValue.toLongOrNull() ?: 0L
-                                                destination.copy(lastModify = Timestamp(timestampValue))
+                                                destination.copy(
+                                                    lastModify = Timestamp(
+                                                        timestampValue
+                                                    )
+                                                )
                                             }
+
                                             else -> destination
                                         }
                                         viewModel.updateDestination(rowIndex, updatedDestination)
@@ -169,274 +201,293 @@ fun DestinationScreen(
                                     viewModel.deleteDestination(rowIndex)
                                 },
                                 onCellSelected = { rowIndex ->
-                                    selectedRowIndex.value = rowIndex
+                                    selectedRowIndexState.value = mutableStateOf(rowIndex)
                                 },
-                                selectedRowIndex = selectedRowIndex,
+                                selectedRowIndex = selectedRowIndexState.value,
                                 isModifyMode = isModifyMode
                             )
+
                         }
                     }
-                }
 
-                // Row of action buttons (Create, Modify, Delete)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 8.dp)
-                        .align(Alignment.BottomCenter),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Create button
-                    FloatingActionButton(
-                        onClick = {
-                            showDialogCreate = true
-                        },
-                        modifier = Modifier.weight(1f)
+                    // Row of action buttons (Create, Modify, Delete)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 8.dp)
+                            .align(Alignment.BottomCenter),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Create")
-                    }
-
-                    // Modify button
-                    FloatingActionButton(
-                        onClick = {
-                            selectedRowIndex.value?.let { rowIndex ->
-                                Log.d("Row", "modifyrow row: $rowIndex")
-                                showDialogModify = true
-                                val selectedDestination = filterData[rowIndex]
-                                createDestinationName = selectedDestination?.name ?: ""
-                                createDestinationDescription = selectedDestination?.description ?: ""
-                                createDestinationCountryMode = selectedDestination?.countryMode ?: ""
-                                createDestinationType = selectedDestination?.type ?: ""
-                                createDestinationPicture = selectedDestination?.picture ?: ""
-                                createDestinationLastModify = selectedDestination?.lastModify?.millis ?: 0L
-                                if (selectedDestination != null) {
-                                    viewModel.updateDestination(rowIndex, selectedDestination)
-                                }else{
-                                    viewModel.showDialog(context.getString(R.string.error_modify))
-                                }
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Modify")
-                    }
-
-                    // Delete button
-                    FloatingActionButton(
-                        onClick = {
-                            selectedRowIndex.value?.let { rowIndex ->
-                                Log.d("Row", "delete row: $rowIndex")
-                                showDialogDelete = true
-                            }
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Delete")
-                    }
-                }
-
-                // Create Destination Dialog
-                if (showDialogCreate) {
-                    AlertDialog(
-                        onDismissRequest = { showDialogCreate = false },
-                        title = { Text(text = "Create New Destination") },
-                        text = {
-                            Column {
-                                Text("Name:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationName,
-                                    onValueChange = { createDestinationName = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Description:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationDescription,
-                                    onValueChange = { createDestinationDescription = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Country Mode:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationCountryMode,
-                                    onValueChange = { createDestinationCountryMode = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Type:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationType,
-                                    onValueChange = { createDestinationType = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Picture:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationPicture,
-                                    onValueChange = { createDestinationPicture = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Last Modify:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = if(createDestinationLastModify == 0L) formatDateFromMillis(System.currentTimeMillis()) else formatDateFromMillis(createDestinationLastModify),
-                                    onValueChange = { it: String ->
-                                        createDestinationLastModify = it.toLongOrNull() ?: System.currentTimeMillis()
-                                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    val newDestination = DestinationDomain(
-                                        id = "${filterData.size + 1}",
-                                        name = createDestinationName,
-                                        description = createDestinationDescription,
-                                        countryMode = createDestinationCountryMode,
-                                        type = createDestinationType,
-                                        picture = createDestinationPicture,
-                                        lastModify = Timestamp(createDestinationLastModify.toLong())
-                                    )
-                                    viewModel.createDestination(newDestination)
-                                    showDialogCreate = false
-                                }
-                            ) {
-                                Text("Create")
-                            }
-                        },
-                        dismissButton = {
-                            Button(
-                                onClick = { showDialogCreate = false }
-                            ) {
-                                Text("Cancel")
-                            }
+                        // Create button
+                        FloatingActionButton(
+                            onClick = {
+                                showDialogCreate = true
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Create")
                         }
-                    )
-                }
 
-                // Confirm Delete Destination Dialog
-                if (showDialogDelete) {
-                    AlertDialog(
-                        onDismissRequest = { showDialogDelete = false },
-                        title = { Text(text = "Confirm Delete") },
-                        text = { Text("Are you sure you want to delete this destination?") },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    selectedRowIndex.value.takeIf { it != -1 }?.let {
-                                        viewModel.deleteDestination(it)
-                                        selectedRowIndex.value = null // Clear selection after deletion
+                        // Modify button
+                        FloatingActionButton(
+                            onClick = {
+                                selectedRowIndex?.let { rowIndex ->
+                                    Log.d("Row", "modifyrow row: $rowIndex")
+                                    showDialogModify = true
+                                    val selectedDestination = filterData[rowIndex.value ?: 0]
+                                    createDestinationName = selectedDestination?.name ?: ""
+                                    createDestinationDescription =
+                                        selectedDestination?.description ?: ""
+                                    createDestinationCountryMode =
+                                        selectedDestination?.countryMode ?: ""
+                                    createDestinationType = selectedDestination?.type ?: ""
+                                    createDestinationPicture = selectedDestination?.picture ?: ""
+                                    createDestinationLastModify =
+                                        selectedDestination?.lastModify?.millis ?: 0L
+                                    if (selectedDestination != null) {
+                                        rowIndex.value?.let{index ->
+                                            viewModel.updateDestination(
+                                                index,
+                                                selectedDestination
+                                            )
+                                        }
+                                    } else {
+                                        viewModel.showDialog(context.getString(R.string.error_modify))
                                     }
-                                    showDialogDelete = false
                                 }
-                            ) {
-                                Text("Delete")
-                            }
-                        },
-                        dismissButton = {
-                            Button(
-                                onClick = { showDialogDelete = false }
-                            ) {
-                                Text("Cancel")
-                            }
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Modify")
                         }
-                    )
-                }
 
-                // Modify Destination Dialog
-                if (showDialogModify) {
-                    AlertDialog(
-                        onDismissRequest = { showDialogModify = false },
-                        title = { Text(text = "Modify Destination") },
-                        text = {
-                            Column {
-                                Text("Name:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationName,
-                                    onValueChange = { createDestinationName = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Description:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationDescription,
-                                    onValueChange = { createDestinationDescription = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Country Mode:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationCountryMode,
-                                    onValueChange = { createDestinationCountryMode = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Type:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationType,
-                                    onValueChange = { createDestinationType = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Picture:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationPicture,
-                                    onValueChange = { createDestinationPicture = it },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text("Last Modify:")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                TextField(
-                                    value = createDestinationLastModify.toString(),
-                                    onValueChange = { createDestinationLastModify = it.toLongOrNull() ?: System.currentTimeMillis() },
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                        },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    selectedRowIndex.value?.let { rowIndex ->
-                                        val updatedDestination = filterData[rowIndex]?.copy(
+                        // Delete button
+                        FloatingActionButton(
+                            onClick = {
+                                selectedRowIndex.value?.let { rowIndex ->
+                                    Log.d("Row", "delete row: $rowIndex")
+                                    showDialogDelete = true
+                                }
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Delete")
+                        }
+                    }
+
+                    // Create Destination Dialog
+                    if (showDialogCreate) {
+                        AlertDialog(
+                            onDismissRequest = { showDialogCreate = false },
+                            title = { Text(text = "Create New Destination") },
+                            text = {
+                                Column {
+                                    Text("Name:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationName,
+                                        onValueChange = { createDestinationName = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Description:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationDescription,
+                                        onValueChange = { createDestinationDescription = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Country Mode:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationCountryMode,
+                                        onValueChange = { createDestinationCountryMode = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Type:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationType,
+                                        onValueChange = { createDestinationType = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Picture:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationPicture,
+                                        onValueChange = { createDestinationPicture = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Last Modify:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = if (createDestinationLastModify == 0L) formatDateFromMillis(
+                                            System.currentTimeMillis()
+                                        ) else formatDateFromMillis(createDestinationLastModify),
+                                        onValueChange = { it: String ->
+                                            createDestinationLastModify =
+                                                it.toLongOrNull() ?: System.currentTimeMillis()
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        val newDestination = DestinationDomain(
+                                            id = "${filterData.size + 1}",
                                             name = createDestinationName,
                                             description = createDestinationDescription,
                                             countryMode = createDestinationCountryMode,
                                             type = createDestinationType,
                                             picture = createDestinationPicture,
-                                            lastModify = Timestamp(createDestinationLastModify)
+                                            lastModify = Timestamp(createDestinationLastModify.toLong())
                                         )
-                                        updatedDestination?.let {
-                                            viewModel.updateDestination(rowIndex, it)
-                                        }
-                                        showDialogModify = false
+                                        viewModel.createDestination(newDestination)
+                                        showDialogCreate = false
                                     }
+                                ) {
+                                    Text("Create")
                                 }
-                            ) {
-                                Text("Modify")
+                            },
+                            dismissButton = {
+                                Button(
+                                    onClick = { showDialogCreate = false }
+                                ) {
+                                    Text("Cancel")
+                                }
                             }
-                        },
-                        dismissButton = {
-                            Button(
-                                onClick = { showDialogModify = false }
-                            ) {
-                                Text("Cancel")
+                        )
+                    }
+
+                    // Confirm Delete Destination Dialog
+                    if (showDialogDelete) {
+                        AlertDialog(
+                            onDismissRequest = { showDialogDelete = false },
+                            title = { Text(text = "Confirm Delete") },
+                            text = { Text("Are you sure you want to delete this destination?") },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        selectedRowIndex.value.takeIf { it != -1 }?.let {
+                                            viewModel.deleteDestination(it)
+                                            selectedRowIndex.value =
+                                                null // Clear selection after deletion
+                                        }
+                                        showDialogDelete = false
+                                    }
+                                ) {
+                                    Text("Delete")
+                                }
+                            },
+                            dismissButton = {
+                                Button(
+                                    onClick = { showDialogDelete = false }
+                                ) {
+                                    Text("Cancel")
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
+
+                    // Modify Destination Dialog
+                    if (showDialogModify) {
+                        AlertDialog(
+                            onDismissRequest = { showDialogModify = false },
+                            title = { Text(text = "Modify Destination") },
+                            text = {
+                                Column {
+                                    Text("Name:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationName,
+                                        onValueChange = { createDestinationName = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Description:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationDescription,
+                                        onValueChange = { createDestinationDescription = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Country Mode:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationCountryMode,
+                                        onValueChange = { createDestinationCountryMode = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Type:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationType,
+                                        onValueChange = { createDestinationType = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Picture:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationPicture,
+                                        onValueChange = { createDestinationPicture = it },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Text("Last Modify:")
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    TextField(
+                                        value = createDestinationLastModify.toString(),
+                                        onValueChange = {
+                                            createDestinationLastModify =
+                                                it.toLongOrNull() ?: System.currentTimeMillis()
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        selectedRowIndex?.let { rowIndex ->
+                                            val updatedDestination =
+                                                filterData[rowIndex.value ?: 0]?.copy(
+                                                    name = createDestinationName,
+                                                    description = createDestinationDescription,
+                                                    countryMode = createDestinationCountryMode,
+                                                    type = createDestinationType,
+                                                    picture = createDestinationPicture,
+                                                    lastModify = Timestamp(
+                                                        createDestinationLastModify
+                                                    )
+                                                )
+                                            updatedDestination?.let {
+                                                viewModel.updateDestination(rowIndex.value ?: 0, it)
+                                            }
+                                            showDialogModify = false
+                                        }
+                                    }
+                                ) {
+                                    Text("Modify")
+                                }
+                            },
+                            dismissButton = {
+                                Button(
+                                    onClick = { showDialogModify = false }
+                                ) {
+                                    Text("Cancel")
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }

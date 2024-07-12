@@ -2,6 +2,8 @@ package com.example.test
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.test.data.models.Timestamp
@@ -37,6 +39,9 @@ class SharedViewModel @Inject constructor(
 
     private val _localData: MutableStateFlow<List<DestinationDomain?>> = MutableStateFlow(listOf())
     val localData: StateFlow<List<DestinationDomain?>> = _localData.asStateFlow()
+
+    private val _selectedRowIndex = MutableStateFlow<Int?>(null)
+    val selectedRowIndex: StateFlow<Int?> = _selectedRowIndex.asStateFlow()
 
     // REMOVE THIS VARIABLE WHEN PRODUCTION SERVER ARE OK
     private var mutableMockData : MutableList<DestinationDomain?> = mutableListOf(
@@ -214,5 +219,9 @@ class SharedViewModel @Inject constructor(
     fun showDialog(string: String) {
         _showDialog.value = true
         _messageDialog.value = string
+    }
+
+    fun setSelectedDestination(index: Int) {
+        _selectedRowIndex.value = index
     }
 }
