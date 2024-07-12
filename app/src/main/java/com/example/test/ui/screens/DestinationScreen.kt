@@ -140,7 +140,7 @@ fun DestinationScreen(
                                             }
                                             else -> destination
                                         }
-                                        viewModel.updateDestination(context,rowIndex, updatedDestination)
+                                        viewModel.updateDestination(rowIndex, updatedDestination)
                                     }
                                 },
                                 onCellDeleted = { rowIndex, _ ->
@@ -188,7 +188,7 @@ fun DestinationScreen(
                                 createDestinationPicture = selectedDestination?.picture ?: ""
                                 createDestinationLastModify = selectedDestination?.lastModify?.millis ?: 0L
                                 if (selectedDestination != null) {
-                                    viewModel.updateDestination(context, rowIndex, selectedDestination)
+                                    viewModel.updateDestination(rowIndex, selectedDestination)
                                 }else{
                                     viewModel.showDialog(context.getString(R.string.error_modify))
                                 }
@@ -398,7 +398,7 @@ fun DestinationScreen(
                                             lastModify = Timestamp(createDestinationLastModify)
                                         )
                                         updatedDestination?.let {
-                                            viewModel.updateDestination(context, rowIndex, it)
+                                            viewModel.updateDestination(rowIndex, it)
                                         }
                                         showDialogModify = false
                                     }

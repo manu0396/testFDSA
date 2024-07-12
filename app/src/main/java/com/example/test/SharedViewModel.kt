@@ -170,7 +170,7 @@ class SharedViewModel @Inject constructor(
         mutableMockData = updateMockData
     }
 
-    fun updateDestination(context: Context, index: Int, updatedDestination: DestinationDomain) {
+    fun updateDestination(index: Int, updatedDestination: DestinationDomain) {
         // Update your MutableStateFlow variables
         val currentData = _data.value.toMutableList()
         val currentLocalData = _localData.value.toMutableList()
