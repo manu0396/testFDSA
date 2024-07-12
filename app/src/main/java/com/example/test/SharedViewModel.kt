@@ -171,16 +171,21 @@ class SharedViewModel @Inject constructor(
     }
 
     fun updateDestination(context: Context, index: Int, updatedDestination: DestinationDomain) {
+        // Update your MutableStateFlow variables
         val currentData = _data.value.toMutableList()
         val currentLocalData = _localData.value.toMutableList()
 
         if (index >= 0 && index < currentData.size && index < currentLocalData.size) {
             currentData[index] = updatedDestination
-            _data.value = currentData
+            _data.value = currentData   // Trigger recomposition
 
             currentLocalData[index] = updatedDestination
-            _localData.value = currentLocalData
+            _localData.value = currentLocalData  // Trigger recomposition
+
+            // Ensure any other necessary state updates
             mutableMockData = currentData
+
+            // Trigger UI update if necessary
 
         } else {
             // Handle invalid index scenario
