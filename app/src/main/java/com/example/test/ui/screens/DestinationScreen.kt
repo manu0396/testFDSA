@@ -74,7 +74,6 @@ fun DestinationScreen(
 
     // Launched effect to trigger initial data fetching
     LaunchedEffect(key1 = data) {
-        viewModel.getLocalData(context)
         viewModel.getResults(context)
         checkConnectivity(context)
     }
