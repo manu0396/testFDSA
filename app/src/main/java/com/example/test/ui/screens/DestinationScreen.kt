@@ -1,29 +1,9 @@
 package com.example.test.ui.screens
 
 import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,12 +12,9 @@ import com.example.test.R
 import com.example.test.SharedViewModel
 import com.example.test.data.models.Timestamp
 import com.example.test.domain.models.DestinationDomain
-import com.example.test.ui.components.AppBar
-import com.example.test.ui.components.EditableTable
-import com.example.test.ui.components.H1Text
-import com.example.test.ui.components.H2Text
-import com.example.test.ui.components.SimpleAlertDialog
+import com.example.test.ui.components.*
 import com.example.test.ui.theme.TestTheme
+import com.example.test.utils.DateUtils
 import com.example.test.utils.NetworkUtils
 
 @Composable
@@ -66,9 +43,13 @@ fun DestinationScreen(
     // State for managing create and modify dialogs
     var showDialogCreate by remember { mutableStateOf(false) }
     var showDialogModify by remember { mutableStateOf(false) }
+    var showDialogDelete by remember { mutableStateOf(false) }
     var createDestinationName by remember { mutableStateOf("") }
     var createDestinationDescription by remember { mutableStateOf("") }
-
+    var createDestinationCountryMode by remember { mutableStateOf("") }
+    var createDestinationType by remember { mutableStateOf("") }
+    var createDestinationPicture by remember { mutableStateOf("") }
+    var createDestinationLastModify by remember { mutableLongStateOf(DateUtils.extractMilliseconds(System.currentTimeMillis().toString())) }
     // State for managing modify mode
     var isModifyMode by remember { mutableStateOf(false) }
 
@@ -195,6 +176,10 @@ fun DestinationScreen(
                                 val selectedDestination = filterData[rowIndex]
                                 createDestinationName = selectedDestination?.name ?: ""
                                 createDestinationDescription = selectedDestination?.description ?: ""
+                                createDestinationCountryMode = selectedDestination?.countryMode ?: ""
+                                createDestinationType = selectedDestination?.type ?: ""
+                                createDestinationPicture = selectedDestination?.picture ?: ""
+                                createDestinationLastModify = selectedDestination?.lastModify?.millis ?: 0L
                             }
                         },
                         modifier = Modifier.weight(1f)
@@ -206,8 +191,8 @@ fun DestinationScreen(
                     FloatingActionButton(
                         onClick = {
                             selectedRowIndex.value?.let { rowIndex ->
-                                viewModel.deleteDestination(rowIndex)
-                                selectedRowIndex.value = null
+                                showDialogDelete = true
+                                selectedRowIndex.value = rowIndex
                             }
                         },
                         modifier = Modifier.weight(1f)
@@ -238,8 +223,40 @@ fun DestinationScreen(
                                     onValueChange = { createDestinationDescription = it },
                                     modifier = Modifier.fillMaxWidth()
                                 )
-                                // Additional fields for countryMode, type, picture, lastModify
-                                // ...
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Country Mode:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = createDestinationCountryMode,
+                                    onValueChange = { createDestinationCountryMode = it },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Type:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = createDestinationType,
+                                    onValueChange = { createDestinationType = it },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Picture:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = createDestinationPicture,
+                                    onValueChange = { createDestinationPicture = it },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Last Modify:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = createDestinationLastModify.toString(),
+                                    onValueChange = { it: String ->
+                                        createDestinationLastModify = it.toLongOrNull() ?: System.currentTimeMillis()
+                                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             }
                         },
                         confirmButton = {
@@ -249,11 +266,10 @@ fun DestinationScreen(
                                         id = "${filterData.size + 1}",
                                         name = createDestinationName,
                                         description = createDestinationDescription,
-                                        countryMode = "New Country Mode",
-                                        type = "New Type",
-                                        picture = "https://example.com/new_image.jpg",
-                                        // Ensure lastModify receives a valid Long value
-                                        lastModify = Timestamp(System.currentTimeMillis())
+                                        countryMode = createDestinationCountryMode,
+                                        type = createDestinationType,
+                                        picture = createDestinationPicture,
+                                        lastModify = Timestamp(createDestinationLastModify.toLong())
                                     )
                                     viewModel.createDestination(newDestination)
                                     showDialogCreate = false
@@ -272,6 +288,34 @@ fun DestinationScreen(
                     )
                 }
 
+                // Confirm Delete Destination Dialog
+                if (showDialogDelete) {
+                    AlertDialog(
+                        onDismissRequest = { showDialogDelete = false },
+                        title = { Text(text = "Confirm Delete") },
+                        text = { Text("Are you sure you want to delete this destination?") },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    selectedRowIndex.value.takeIf { it != -1 }?.let {
+                                        viewModel.deleteDestination(it)
+                                        selectedRowIndex.value = null // Clear selection after deletion
+                                    }
+                                    showDialogDelete = false
+                                }
+                            ) {
+                                Text("Delete")
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = { showDialogDelete = false }
+                            ) {
+                                Text("Cancel")
+                            }
+                        }
+                    )
+                }
 
                 // Modify Destination Dialog
                 if (showDialogModify) {
@@ -295,8 +339,38 @@ fun DestinationScreen(
                                     onValueChange = { createDestinationDescription = it },
                                     modifier = Modifier.fillMaxWidth()
                                 )
-                                // Additional fields for countryMode, type, picture, lastModify
-                                // ...
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Country Mode:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = createDestinationCountryMode,
+                                    onValueChange = { createDestinationCountryMode = it },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Type:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = createDestinationType,
+                                    onValueChange = { createDestinationType = it },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Picture:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = createDestinationPicture,
+                                    onValueChange = { createDestinationPicture = it },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text("Last Modify:")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextField(
+                                    value = createDestinationLastModify.toString(),
+                                    onValueChange = { createDestinationLastModify = it.toLongOrNull() ?: System.currentTimeMillis() },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             }
                         },
                         confirmButton = {
@@ -306,14 +380,16 @@ fun DestinationScreen(
                                         val updatedDestination = filterData[rowIndex]?.copy(
                                             name = createDestinationName,
                                             description = createDestinationDescription,
-                                            // Ensure lastModify receives a valid Long value
-                                            lastModify = Timestamp(System.currentTimeMillis())
+                                            countryMode = createDestinationCountryMode,
+                                            type = createDestinationType,
+                                            picture = createDestinationPicture,
+                                            lastModify = Timestamp(createDestinationLastModify)
                                         )
-                                        if (updatedDestination != null) {
-                                            viewModel.updateDestination(rowIndex, updatedDestination)
+                                        updatedDestination?.let {
+                                            viewModel.updateDestination(rowIndex, it)
                                         }
+                                        showDialogModify = false
                                     }
-                                    showDialogModify = false
                                 }
                             ) {
                                 Text("Modify")
