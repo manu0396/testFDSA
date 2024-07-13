@@ -31,7 +31,7 @@ fun VerticalDataSelector(
     modifier: Modifier = Modifier,
     data: List<String>,
     onItemSelected: (String) -> Unit,
-    onRowSelected: (Int) -> Unit,
+    onRowSelected: (Int, String?) -> Unit,
     viewModel: SharedViewModel
 ) {
     var searchText by remember { mutableStateOf("") }
@@ -71,7 +71,7 @@ fun VerticalDataSelector(
                             if (index >= 0) {
                                 viewModel.setSelectedDestination(index)
                                 onItemSelected(data[index]) // Pass the original data item
-                                onRowSelected(index)
+                                onRowSelected(index, context.getString(R.string.searchItemFound, data[index]))
                             } else {
                                 viewModel.showError(context.getString(R.string.no_data_found))
                             }

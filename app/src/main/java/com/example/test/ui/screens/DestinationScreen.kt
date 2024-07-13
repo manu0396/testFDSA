@@ -140,9 +140,12 @@ fun DestinationScreen(
                         onItemSelected = { selected ->
                             selectedItem = selected
                         },
-                        onRowSelected = {
-                            selectedRowIndex = it
+                        onRowSelected = { index, resultSearch ->
+                            selectedRowIndex = index
                             isModifyMode = false
+                            resultSearch?.let {
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            }
                         },
                         viewModel = viewModel,
                         context = context

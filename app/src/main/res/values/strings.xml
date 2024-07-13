@@ -13,4 +13,5 @@
     <string name="main_title">HotelBediaX</string>
     <string name="no_data_found">No se han encontrado destinos disponibles.</string>
     <string name="error_modify">Se ha producido un error al modificar el producto. Intentelo de nuevo más tarde.</string>
+    <string name="searchItemFound">Found destination: %1s</string>
 </resources>
