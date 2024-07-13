@@ -1,5 +1,7 @@
 package com.example.test.ui.components
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +26,7 @@ import com.example.test.SharedViewModel
 
 @Composable
 fun VerticalDataSelector(
+    context: Context,
     modifier: Modifier = Modifier,
     data: List<String>,
     onItemSelected: (String) -> Unit,
@@ -52,12 +55,14 @@ fun VerticalDataSelector(
                 leadingIcon = {
                     IconButton(
                         onClick = {
+                            Log.d("VerticalDataSelector", "Search button clicked")
+                            Log.d("VerticalDataSelector", "SearchText: $searchText")
                             val index = data.indexOf(searchText)
                             if (index >= 0) {
                                 viewModel.setSelectedDestination(index)
                                 onItemSelected(searchText)
                             } else {
-                                // Handle case where item is not found
+                                viewModel.showError(context.getString(R.string.no_data_found))
                             }
                         }
                     ) {

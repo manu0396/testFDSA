@@ -141,7 +141,8 @@ fun DestinationScreen(
                         onItemSelected = { selected ->
                             selectedItem = selected
                         },
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        context = context
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))

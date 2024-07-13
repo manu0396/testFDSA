@@ -224,4 +224,9 @@ class SharedViewModel @Inject constructor(
     fun setSelectedDestination(index: Int) {
         _selectedRowIndex.value = index
     }
+
+    fun showError(string: String) {
+        _showDialog.value = true
+        _messageDialog.value = string
+    }
 }
