@@ -1,12 +1,10 @@
 package com.example.test.ui.screens
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,12 +13,7 @@ import com.example.test.R
 import com.example.test.SharedViewModel
 import com.example.test.data.models.Timestamp
 import com.example.test.domain.models.DestinationDomain
-import com.example.test.ui.components.AppBar
-import com.example.test.ui.components.EditableTable
-import com.example.test.ui.components.H1Text
-import com.example.test.ui.components.H2Text
-import com.example.test.ui.components.SimpleAlertDialog
-import com.example.test.ui.components.VerticalDataSelector
+import com.example.test.ui.components.*
 import com.example.test.ui.theme.TestTheme
 import com.example.test.utils.DateUtils
 import com.example.test.utils.NetworkUtils
@@ -77,6 +70,10 @@ fun DestinationScreen(
     }
     // State for managing modify mode
     var isModifyMode by remember { mutableStateOf(false) }
+
+    // State for managing search result dialog
+    var showDialogSearchResult by remember { mutableStateOf(false) }
+    var searchResultItem by remember { mutableStateOf<DestinationDomain?>(null) }
 
     // Launched effect to trigger initial data fetching
     LaunchedEffect(key1 = filterData) {
@@ -144,7 +141,8 @@ fun DestinationScreen(
                             selectedRowIndex = index
                             isModifyMode = false
                             resultSearch?.let {
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                searchResultItem = filterData[index]
+                                showDialogSearchResult = true
                             }
                         },
                         viewModel = viewModel,
@@ -198,8 +196,11 @@ fun DestinationScreen(
                             val index = filterData.indexOfFirst { it?.name == selectedItem }
                             if (index >= 0) {
                                 selectedRowIndex = index
+                                searchResultItem = filterData[index]
+                                showDialogSearchResult = true
                             } else {
-                                Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
+                                searchResultItem = null
+                                showDialogSearchResult = true
                             }
                         },
                         modifier = Modifier.align(Alignment.End)
@@ -498,6 +499,33 @@ fun DestinationScreen(
                                 onClick = { showDialogDelete = false }
                             ) {
                                 Text("Cancel")
+                            }
+                        }
+                    )
+                }
+
+                // Search Result Dialog
+                if (showDialogSearchResult) {
+                    AlertDialog(
+                        onDismissRequest = { showDialogSearchResult = false },
+                        title = { Text(text = "Search Result") },
+                        text = {
+                            searchResultItem?.let { item ->
+                                Column {
+                                    Text("Name: ${item.name}")
+                                    Text("Description: ${item.description}")
+                                    Text("Country Mode: ${item.countryMode}")
+                                    Text("Type: ${item.type}")
+                                    Text("Picture: ${item.picture}")
+                                    Text("Last Modify: ${item.lastModify?.millis}")
+                                }
+                            } ?: Text("Item not found")
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = { showDialogSearchResult = false }
+                            ) {
+                                Text("OK")
                             }
                         }
                     )
