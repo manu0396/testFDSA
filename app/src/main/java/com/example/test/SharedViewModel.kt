@@ -222,6 +222,7 @@ class SharedViewModel @Inject constructor(
     }
 
     fun setSelectedDestination(index: Int) {
+        Log.d("VerticalDataSelector", "setSelectedDestination:$index")
         _selectedRowIndex.value = index
     }
 

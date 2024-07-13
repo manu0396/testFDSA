@@ -23,7 +23,6 @@ import com.example.test.ui.components.SimpleAlertDialog
 import com.example.test.ui.components.VerticalDataSelector
 import com.example.test.ui.theme.TestTheme
 import com.example.test.utils.DateUtils
-import com.example.test.utils.DateUtils.formatDateFromMillis
 import com.example.test.utils.NetworkUtils
 
 @Composable
@@ -140,6 +139,10 @@ fun DestinationScreen(
                         data = filterData.map { it?.name ?: "" },
                         onItemSelected = { selected ->
                             selectedItem = selected
+                        },
+                        onRowSelected = {
+                            selectedRowIndex = it
+                            isModifyMode = false
                         },
                         viewModel = viewModel,
                         context = context

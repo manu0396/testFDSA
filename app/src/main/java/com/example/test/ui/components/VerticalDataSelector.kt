@@ -23,6 +23,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.test.R
 import com.example.test.SharedViewModel
+import java.util.Locale
 
 @Composable
 fun VerticalDataSelector(
@@ -30,6 +31,7 @@ fun VerticalDataSelector(
     modifier: Modifier = Modifier,
     data: List<String>,
     onItemSelected: (String) -> Unit,
+    onRowSelected: (Int) -> Unit,
     viewModel: SharedViewModel
 ) {
     var searchText by remember { mutableStateOf("") }
@@ -57,10 +59,17 @@ fun VerticalDataSelector(
                         onClick = {
                             Log.d("VerticalDataSelector", "Search button clicked")
                             Log.d("VerticalDataSelector", "SearchText: $searchText")
-                            val index = data.indexOf(searchText)
+
+                            // Convert searchText to lowercase
+                            val searchTextLower = searchText.lowercase(Locale.ROOT)
+
+                            // Find the index of the item by comparing lowercase versions of the items
+                            val index = data.indexOfFirst { it.lowercase(Locale.ROOT) == searchTextLower }
+
                             if (index >= 0) {
                                 viewModel.setSelectedDestination(index)
-                                onItemSelected(searchText)
+                                onItemSelected(data[index]) // Pass the original data item
+                                onRowSelected(index)
                             } else {
                                 viewModel.showError(context.getString(R.string.no_data_found))
                             }
