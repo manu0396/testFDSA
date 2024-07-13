@@ -1,12 +1,15 @@
 package com.example.test.ui.screens
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.test.R
@@ -14,7 +17,7 @@ import com.example.test.SharedViewModel
 import com.example.test.data.models.Timestamp
 import com.example.test.domain.models.DestinationDomain
 import com.example.test.ui.components.*
-import com.example.test.ui.theme.TestTheme
+import com.example.test.ui.theme.CustomTheme
 import com.example.test.utils.DateUtils
 import com.example.test.utils.NetworkUtils
 
@@ -82,7 +85,7 @@ fun DestinationScreen(
     }
 
     // Scaffold and UI components
-    TestTheme {
+    CustomTheme {
         // Show dialog for errors if showDialog is true
         if (showDialog) {
             SimpleAlertDialog(
@@ -116,9 +119,9 @@ fun DestinationScreen(
                     text = context.getString(R.string.destination_title),
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(16.dp)
+                        .padding(top = 8.dp, bottom = 16.dp)
                 )
-
+                Spacer(modifier = Modifier.height(32.dp))
                 // Search and Filter Column
                 Column(
                     verticalArrangement = Arrangement.Top,
@@ -156,7 +159,12 @@ fun DestinationScreen(
                         data = filterData,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
-                            .align(Alignment.CenterHorizontally),
+                            .align(Alignment.CenterHorizontally)
+                            .background(
+                                color = Color(0xFFEAFAF5),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(16.dp),
                         onCellEdited = { rowIndex, colIndex, newValue ->
                             viewModel.data.value.getOrNull(rowIndex)?.let { destination ->
                                 val updatedDestination = when (colIndex) {
@@ -238,18 +246,22 @@ fun DestinationScreen(
                 ) {
                     // Create button
                     FloatingActionButton(
+                        shape = RoundedCornerShape(50),
                         onClick = {
                             showDialogCreate = true
                         },
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
-                            .weight(1f)
+                            .weight(1f),
+                        containerColor = Color(0xFFD4EFE7),
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Text("Create")
                     }
 
                     // Modify button
                     FloatingActionButton(
+                        shape = RoundedCornerShape(50),
                         onClick = {
                             selectedRowIndex?.let { rowIndex ->
                                 showDialogModify = true
@@ -267,13 +279,16 @@ fun DestinationScreen(
                         },
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
-                            .weight(1f)
+                            .weight(1f),
+                        containerColor = Color(0xFFD4EFE7),
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Text("Modify")
                     }
 
                     // Delete button
                     FloatingActionButton(
+                        shape = RoundedCornerShape(50),
                         onClick = {
                             selectedRowIndex?.let { rowIndex ->
                                 showDialogDelete = true
@@ -281,7 +296,9 @@ fun DestinationScreen(
                         },
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
-                            .weight(1f)
+                            .weight(1f),
+                        containerColor = Color(0xFFD4EFE7),
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Text("Delete")
                     }
