@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.test.ui.components.LoadBackgroundImage
 import com.example.test.ui.nav.Screens
 import com.example.test.ui.screens.DestinationScreen
 import com.example.test.ui.theme.CustomTheme
@@ -34,13 +35,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             CustomTheme {
                 val navController = rememberNavController()
+                LoadBackgroundImage(modifier = Modifier.fillMaxSize())
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Image(
-                        painter = painterResource(id = R.drawable.th),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
                     NavHost(navController = navController, startDestination = Screens.Auth.route) {
                         navigation(startDestination = Screens.MainScreen.route, route = Screens.Auth.route) {
                             composable(Screens.MainScreen.route) { navBackStackEntry ->
@@ -60,7 +56,7 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * Function to instantiate viewmodel, passing route in case it exits.
+ * Function to instantiate viewmodel, passing route in case it exists.
  */
 @Composable
 fun NavBackStackEntry.sharedViewModel(navController: NavController): SharedViewModel {
