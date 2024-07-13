@@ -1,6 +1,7 @@
 package com.example.test.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Row
@@ -69,6 +70,7 @@ fun EditableTable(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp, horizontal = 4.dp)
                     .background(if (isSelected) Color.LightGray else Color.Transparent)
+                    .border(1.dp, if (isSelected) Color.LightGray else Color.Transparent)
                     .clickable {
                         if (!isModifyMode) {
                             onCellSelected(rowIndex)

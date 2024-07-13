@@ -63,7 +63,7 @@ fun VerticalDataSelector(
                             // Convert searchText to lowercase
                             val searchTextLower = searchText.lowercase(Locale.ROOT).trim()
 
-// Find the index of the item that contains searchTextLower in its name (case-insensitive)
+                            // Find the index of the item that contains searchTextLower in its name (case-insensitive)
                             val index = data.indexOfFirst { item ->
                                 item.lowercase(Locale.ROOT).contains(searchTextLower)
                             }
