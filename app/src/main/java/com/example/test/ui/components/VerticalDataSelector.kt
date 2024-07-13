@@ -61,10 +61,12 @@ fun VerticalDataSelector(
                             Log.d("VerticalDataSelector", "SearchText: $searchText")
 
                             // Convert searchText to lowercase
-                            val searchTextLower = searchText.lowercase(Locale.ROOT)
+                            val searchTextLower = searchText.lowercase(Locale.ROOT).trim()
 
-                            // Find the index of the item by comparing lowercase versions of the items
-                            val index = data.indexOfFirst { it.lowercase(Locale.ROOT) == searchTextLower }
+// Find the index of the item that contains searchTextLower in its name (case-insensitive)
+                            val index = data.indexOfFirst { item ->
+                                item.lowercase(Locale.ROOT).contains(searchTextLower)
+                            }
 
                             if (index >= 0) {
                                 viewModel.setSelectedDestination(index)
