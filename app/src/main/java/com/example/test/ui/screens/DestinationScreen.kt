@@ -71,12 +71,22 @@ fun DestinationScreen(
             )
         )
     }
+
     // State for managing modify mode
     var isModifyMode by remember { mutableStateOf(false) }
 
     // State for managing search result dialog
     var showDialogSearchResult by remember { mutableStateOf(false) }
     var searchResultItem by remember { mutableStateOf<DestinationDomain?>(null) }
+
+    // State for managing selected item values
+    var selectedItemId by remember { mutableStateOf("") }
+    var selectedItemName by remember { mutableStateOf("") }
+    var selectedItemDescription by remember { mutableStateOf("") }
+    var selectedItemCountryMode by remember { mutableStateOf("") }
+    var selectedItemType by remember { mutableStateOf("") }
+    var selectedItemPicture by remember { mutableStateOf("") }
+    var selectedItemLastModify by remember { mutableStateOf(Timestamp(0)) }
 
     // Launched effect to trigger initial data fetching
     LaunchedEffect(key1 = filterData) {
@@ -186,6 +196,15 @@ fun DestinationScreen(
                                     else -> destination
                                 }
                                 viewModel.updateDestination(rowIndex, updatedDestination)
+                                // Reset selected item and row variables
+                                selectedRowIndex = null
+                                selectedItemId = ""
+                                selectedItemName = ""
+                                selectedItemDescription = ""
+                                selectedItemCountryMode = ""
+                                selectedItemType = ""
+                                selectedItemPicture = ""
+                                selectedItemLastModify = Timestamp(0)
                             }
                         },
                         onCellDeleted = { rowIndex, _ ->
@@ -193,6 +212,15 @@ fun DestinationScreen(
                         },
                         onCellSelected = { rowIndex ->
                             selectedRowIndex = rowIndex
+                            viewModel.data.value.getOrNull(rowIndex)?.let { destination ->
+                                selectedItemId = destination.id ?: ""
+                                selectedItemName = destination.name ?: ""
+                                selectedItemDescription = destination.description ?: ""
+                                selectedItemCountryMode = destination.countryMode ?: ""
+                                selectedItemType = destination.type ?: ""
+                                selectedItemPicture = destination.picture ?: ""
+                                selectedItemLastModify = destination.lastModify ?: Timestamp(0)
+                            }
                         },
                         selectedRowIndex = remember { mutableStateOf(selectedRowIndex) },
                         isModifyMode = isModifyMode
@@ -474,6 +502,15 @@ fun DestinationScreen(
                                                 Timestamp(createDestinationLastModify.millis)
                                             )
                                         )
+                                        // Reset selected item and row variables
+                                        selectedRowIndex = null
+                                        selectedItemId = ""
+                                        selectedItemName = ""
+                                        selectedItemDescription = ""
+                                        selectedItemCountryMode = ""
+                                        selectedItemType = ""
+                                        selectedItemPicture = ""
+                                        selectedItemLastModify = Timestamp(0)
                                     }
                                     showDialogModify = false
                                 }
@@ -504,6 +541,15 @@ fun DestinationScreen(
                                 onClick = {
                                     selectedRowIndex?.let { rowIndex ->
                                         viewModel.deleteDestination(rowIndex)
+                                        // Reset selected item and row variables
+                                        selectedRowIndex = null
+                                        selectedItemId = ""
+                                        selectedItemName = ""
+                                        selectedItemDescription = ""
+                                        selectedItemCountryMode = ""
+                                        selectedItemType = ""
+                                        selectedItemPicture = ""
+                                        selectedItemLastModify = Timestamp(0)
                                     }
                                     showDialogDelete = false
                                 }
