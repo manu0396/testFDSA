@@ -240,7 +240,9 @@ fun DestinationScreen(
                         onClick = {
                             showDialogCreate = true
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .weight(1f)
                     ) {
                         Text("Create")
                     }
@@ -262,7 +264,9 @@ fun DestinationScreen(
                                     selectedDestination?.lastModify ?: Timestamp(0)
                             } ?: viewModel.showDialog(context.getString(R.string.error_modify))
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .weight(1f)
                     ) {
                         Text("Modify")
                     }
@@ -274,7 +278,9 @@ fun DestinationScreen(
                                 showDialogDelete = true
                             }
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .weight(1f)
                     ) {
                         Text("Delete")
                     }
