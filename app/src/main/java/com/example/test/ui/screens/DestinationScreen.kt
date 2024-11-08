@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -168,11 +169,16 @@ fun DestinationScreen(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .align(Alignment.CenterHorizontally)
+                            .clip(RoundedCornerShape(16.dp)) // Added to clip content with rounded corners
                             .background(
-                                color = Color(0xFFEAFAF5),
-                                shape = RoundedCornerShape(8.dp)
+                                color = Color(0xFFaac6f5),
+                                shape = RoundedCornerShape(16.dp) // Matches the clip shape for consistency
                             )
-                            .border(width = 1.dp, color = Color.LightGray)
+                            .border(
+                                width = 1.dp,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(16.dp) // Ensure the border also follows the rounded shape
+                            )
                             .padding(16.dp),
                         onCellEdited = { rowIndex, colIndex, newValue ->
                             viewModel.data.value.getOrNull(rowIndex)?.let { destination ->
@@ -191,7 +197,6 @@ fun DestinationScreen(
                                             )
                                         )
                                     }
-
                                     else -> destination
                                 }
                                 viewModel.updateDestination(rowIndex, updatedDestination)
@@ -267,7 +272,7 @@ fun DestinationScreen(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .weight(1f),
-                        containerColor = Color(0xFFD4EFE7),
+                        containerColor = Color(0xFF4285F4),
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Icon(Icons.Default.Add, contentDescription = "Create")
@@ -294,7 +299,7 @@ fun DestinationScreen(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .weight(1f),
-                        containerColor = Color(0xFFD4EFE7),
+                        containerColor = Color(0xFF34A853),
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Icon(Icons.Default.Edit, contentDescription = "Modify")
@@ -311,7 +316,7 @@ fun DestinationScreen(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .weight(1f),
-                        containerColor = Color(0xFFD4EFE7),
+                        containerColor = Color(0xFFEA4335),
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
                         Icon(Icons.Default.Delete, contentDescription = "Create")
