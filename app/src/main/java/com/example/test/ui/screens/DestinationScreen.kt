@@ -516,9 +516,7 @@ fun DestinationScreen(
                         onDismissRequest = { showDialogDelete = false },
                         title = { Text(text = "Delete Destination") },
                         text = {
-                            Text("Are you sure you want to delete destination ${selectedRowIndex?.plus(
-                                1
-                            )}?")
+                            Text("Are you sure you want to delete selected destination?")
                         },
                         confirmButton = {
                             Button(
