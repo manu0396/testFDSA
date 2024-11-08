@@ -11,6 +11,7 @@ import com.example.test.domain.mapper.MainMapper
 import com.example.test.domain.models.DestinationDomain
 import com.example.test.domain.useCase.GetLocalDestinationsUseCase
 import com.example.test.domain.useCase.GetRemoteDestinationsUseCase
+import com.example.test.utils.NetworkUtils
 import com.example.test.utils.WrapperResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -79,7 +80,6 @@ class SharedViewModel @Inject constructor(
 
     @Inject
     lateinit var GetLocalDestinationsUseCase: GetLocalDestinationsUseCase
-
 
     fun getResults(context: Context) {
         try {
@@ -176,52 +176,79 @@ class SharedViewModel @Inject constructor(
     }
 
     fun updateDestination(index: Int, updatedDestination: DestinationDomain) {
-        // Create new lists to trigger recomposition
+        // Create new lists to ensure recomposition
         val newData = _data.value.toMutableList()
         val newLocalData = _localData.value.toMutableList()
 
-        if (index >= 0 && index < newData.size && index < newLocalData.size) {
+        if (index in newData.indices) {
+            // Update the relevant item at the given index
             newData[index] = updatedDestination
+
+            // Emit a new list instance to trigger recomposition
+            _data.value = newData.toList() // Creating a new instance ensures recomposition
+
+            // Sync with mock data
+            mutableMockData = newData.toMutableList()
+            Log.d("Update", "Updated data after modification: ${_data.value}")
+        }
+
+        if (index in newLocalData.indices) {
+            // Update the relevant item in local data if necessary
             newLocalData[index] = updatedDestination
-
-            // Update the MutableStateFlow with new list instances
-            _data.value = newData
-            _localData.value = newLocalData
-
-            // Ensure any other necessary state updates
-            mutableMockData = newData
-
+            _localData.value = newLocalData.toList()
+            Log.d("Update", "Updated local data after modification: ${_localData.value}")
         } else {
             // Handle invalid index scenario
             Log.e("Update", "Invalid index $index for data or localData list")
             _showDialog.value = true
-            _messageDialog.value = "Invalid index: row$index"
+            _messageDialog.value = "Invalid index: row $index"
         }
     }
-    fun deleteDestination(rowIndex: Int) {
-        val currentData = _data.value.toMutableList()
-        val currentLocalData = _localData.value.toMutableList()
 
-        if (rowIndex in currentData.indices && rowIndex in currentLocalData.indices) {
-            currentData.removeAt(rowIndex)
-            currentLocalData.removeAt(rowIndex)
-            mutableMockData.removeAt(rowIndex)
-            _data.value = currentData
-            _localData.value = currentLocalData
-        } else {
-            // Handle invalid index scenario
-            Log.e("Delete", "Invalid index $rowIndex for data or localData list")
+
+    fun deleteDestination(rowIndex: Int?) {
+        // Ensure that the provided index is valid and not null
+        rowIndex?.let {
+            val currentData = _data.value.toMutableList()
+            val currentLocalData = _localData.value.toMutableList()
+
+            // Check if the index is within the bounds of the _data and _localData lists
+            if (it in currentData.indices) {
+                // Remove the item at the specified index in both lists
+                currentData.removeAt(it)
+                _data.value = currentData // Update the state to trigger recomposition
+            } else {
+                Log.e("Delete", "Invalid index $it for _data list")
+                _showDialog.value = true
+                _messageDialog.value = "Invalid index: row $it"
+            }
+
+            if (it in currentLocalData.indices) {
+                currentLocalData.removeAt(it)
+                _localData.value = currentLocalData // Update the state to trigger recomposition
+            } else {
+                Log.e("Delete", "Invalid index $it for _localData list")
+            }
+
+            if (it in mutableMockData.indices) {
+                mutableMockData.removeAt(it) // Sync mock data if used for testing
+            }
+        } ?: run {
+            // Handle null index case (e.g., if no row was selected)
+            Log.e("Delete", "Row index is null")
             _showDialog.value = true
-            _messageDialog.value = "Invalid index: row $rowIndex"
+            _messageDialog.value = "No row selected for deletion"
         }
     }
+
+
 
     fun showDialog(string: String) {
         _showDialog.value = true
         _messageDialog.value = string
     }
 
-    fun setSelectedDestination(index: Int) {
+    fun setSelectedDestination(index: Int?) {
         Log.d("VerticalDataSelector", "setSelectedDestination:$index")
         _selectedRowIndex.value = index
     }

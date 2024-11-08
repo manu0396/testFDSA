@@ -1,7 +1,9 @@
 package com.example.test.ui.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -34,23 +36,15 @@ fun DestinationScreen(
     val showDialog by viewModel.showDialog.collectAsState()
     val messageDialog by viewModel.messageDialog.collectAsState()
 
-    val filterData by remember(data, localData) {
-        derivedStateOf {
-            if (NetworkUtils.checkConnectivity(context)) {
-                data
-            } else {
-                localData
-            }
-        }
+    val filterData = if (NetworkUtils.checkConnectivity(context)) {
+        data
+    } else {
+        localData
     }
 
+
     // State for managing selected row index
-    var selectedRowIndex by remember { mutableStateOf<Int?>(viewModel.selectedRowIndex.value) }
-    LaunchedEffect(key1 = viewModel.selectedRowIndex) {
-        viewModel.selectedRowIndex.collect { index ->
-            selectedRowIndex = index
-        }
-    }
+    val selectedRowIndex by viewModel.selectedRowIndex.collectAsState()
 
     // State for managing create and modify dialogs
     var showDialogCreate by remember { mutableStateOf(false) }
@@ -89,7 +83,7 @@ fun DestinationScreen(
     var selectedItemLastModify by remember { mutableStateOf(Timestamp(0)) }
 
     // Launched effect to trigger initial data fetching
-    LaunchedEffect(key1 = filterData) {
+    LaunchedEffect(key1 = true) {
         viewModel.getResults(context)
         NetworkUtils.checkConnectivity(context)
     }
@@ -151,7 +145,7 @@ fun DestinationScreen(
                             selectedItem = selected
                         },
                         onRowSelected = { index, resultSearch ->
-                            selectedRowIndex = index
+                            viewModel.setSelectedDestination(index)
                             isModifyMode = false
                             resultSearch?.let {
                                 searchResultItem = filterData[index]
@@ -174,6 +168,7 @@ fun DestinationScreen(
                                 color = Color(0xFFEAFAF5),
                                 shape = RoundedCornerShape(8.dp)
                             )
+                            .border(width = 1.dp, color = Color.LightGray)
                             .padding(16.dp),
                         onCellEdited = { rowIndex, colIndex, newValue ->
                             viewModel.data.value.getOrNull(rowIndex)?.let { destination ->
@@ -197,7 +192,7 @@ fun DestinationScreen(
                                 }
                                 viewModel.updateDestination(rowIndex, updatedDestination)
                                 // Reset selected item and row variables
-                                selectedRowIndex = null
+                                viewModel.setSelectedDestination(null)
                                 selectedItemId = ""
                                 selectedItemName = ""
                                 selectedItemDescription = ""
@@ -209,9 +204,11 @@ fun DestinationScreen(
                         },
                         onCellDeleted = { rowIndex, _ ->
                             viewModel.deleteDestination(rowIndex)
+                            viewModel.setSelectedDestination(null)
                         },
                         onCellSelected = { rowIndex ->
-                            selectedRowIndex = rowIndex
+                            viewModel.setSelectedDestination(selectedRowIndex ?: rowIndex)
+                            Log.d("RowIndex", "SelectedIndex: $rowIndex")
                             viewModel.data.value.getOrNull(rowIndex)?.let { destination ->
                                 selectedItemId = destination.id ?: ""
                                 selectedItemName = destination.name ?: ""
@@ -223,26 +220,11 @@ fun DestinationScreen(
                             }
                         },
                         selectedRowIndex = remember { mutableStateOf(selectedRowIndex) },
-                        isModifyMode = isModifyMode
+                        isModifyMode = isModifyMode,
+                        onRefresh = {
+                            viewModel.getResults(context)
+                        }
                     )
-
-                    // Search button inside VerticalDataSelector
-                    Button(
-                        onClick = {
-                            val index = filterData.indexOfFirst { it?.name == selectedItem }
-                            if (index >= 0) {
-                                selectedRowIndex = index
-                                searchResultItem = filterData[index]
-                                showDialogSearchResult = true
-                            } else {
-                                searchResultItem = null
-                                showDialogSearchResult = true
-                            }
-                        },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text("Search")
-                    }
                 }
 
                 // Loading or Error message when data is loading or empty
@@ -503,7 +485,7 @@ fun DestinationScreen(
                                             )
                                         )
                                         // Reset selected item and row variables
-                                        selectedRowIndex = null
+                                        viewModel.setSelectedDestination(null)
                                         selectedItemId = ""
                                         selectedItemName = ""
                                         selectedItemDescription = ""
@@ -534,15 +516,16 @@ fun DestinationScreen(
                         onDismissRequest = { showDialogDelete = false },
                         title = { Text(text = "Delete Destination") },
                         text = {
-                            Text("Are you sure you want to delete this destination?")
+                            Text("Are you sure you want to delete destination ${selectedRowIndex?.plus(
+                                1
+                            )}?")
                         },
                         confirmButton = {
                             Button(
                                 onClick = {
                                     selectedRowIndex?.let { rowIndex ->
-                                        viewModel.deleteDestination(rowIndex)
-                                        // Reset selected item and row variables
-                                        selectedRowIndex = null
+                                        viewModel.deleteDestination(rowIndex)                                     // Reset selected item and row variables
+                                        viewModel.setSelectedDestination(null)
                                         selectedItemId = ""
                                         selectedItemName = ""
                                         selectedItemDescription = ""
