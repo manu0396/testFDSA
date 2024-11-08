@@ -7,6 +7,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -266,7 +270,7 @@ fun DestinationScreen(
                         containerColor = Color(0xFFD4EFE7),
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
-                        Text("Create")
+                        Icon(Icons.Default.Add, contentDescription = "Create")
                     }
 
                     // Modify button
@@ -293,7 +297,7 @@ fun DestinationScreen(
                         containerColor = Color(0xFFD4EFE7),
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
-                        Text("Modify")
+                        Icon(Icons.Default.Edit, contentDescription = "Modify")
                     }
 
                     // Delete button
@@ -310,7 +314,7 @@ fun DestinationScreen(
                         containerColor = Color(0xFFD4EFE7),
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ) {
-                        Text("Delete")
+                        Icon(Icons.Default.Delete, contentDescription = "Create")
                     }
                 }
 
